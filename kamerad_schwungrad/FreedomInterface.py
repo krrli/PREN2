@@ -1,4 +1,4 @@
-from serial import Serial
+import serial
 from threading import Thread
 
 
@@ -7,6 +7,8 @@ Methods for interacting with the Freedom Board
 Note: be sure to call reset when the parcour is finished
 because the startSignal
 """
+
+
 class FreedomInterface:
     ACKNOWLEDGE = b'\x20'
     ERROR = b'\x10'
@@ -21,7 +23,11 @@ class FreedomInterface:
     1 stop bit
     """
     def __init__(self):
-        self._serial = Serial('/dev/ttyS0', 9600, bytesize=EIGHTBITS, parity=PARITY_EVEN, stopbits=STOPBITS_ONE, timeout=1)
+        self._serial = serial.Serial('/dev/ttyS0', 9600,
+                                     bytesize=serial.EIGHTBITS,
+                                     parity=serial.PARITY_EVEN,
+                                     stopbits=serial.STOPBITS_ONE,
+                                     timeout=1)
         self.thread = None
         self.last_async_command = None
 
@@ -88,7 +94,7 @@ class FreedomInterface:
     """
     def wait_for_command(self):
         self.last_async_command = None
-        self.thread = Thread(target=self._wait_for_single_command, args(self))
+        self.thread = Thread(target=self._wait_for_single_command, args=(self, ))
         self.thread.start()
 
     """
