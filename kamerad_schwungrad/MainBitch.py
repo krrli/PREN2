@@ -15,11 +15,11 @@ class MainBitch:
     """
     Drive the whole Parcours.
     """
-    def runParcour(self):
+    def run_parcour(self):
         self.waitForTrafficLight()
 
     """
     Blocks until the traffic light is green.
     """
-    def waitForTrafficLight(self):
+    def wait_for_traffic_light(self):
         pass
