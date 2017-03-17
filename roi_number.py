@@ -43,11 +43,11 @@ _ , width, _ = im.shape
 
 cropImg_top_top = im[(int)(yStart):(int)(yEnd-3*h_new/4), 0:width]
 
-cropImg_top = im[(int)(yStart+h_new/4):(int)(yEnd-h_new/4), 0:width]
+cropImg_top = im[(int)(yStart+h_new/4):(int)(yEnd-h_new/2), 0:width]
 
 
-cropImg_bottom = im[(int)(yStart+h_new/4):(int)(yEnd-h_new/4), 0:width]
-cropImg_bottom_bottom = im[((int)(yStart+(int)(h_new)))/2:(yEnd), 0:width]
+cropImg_bottom = im[(int)(yStart+h_new/2):(int)(yEnd-h_new/4), 0:width]
+cropImg_bottom_bottom = im[((int)(yStart+(int)(3*h_new/4))):(yEnd), 0:width]
 
 #cv2.imshow('thresh', thresh)
 cv2.imshow('contours', im)
