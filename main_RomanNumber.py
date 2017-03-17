@@ -183,4 +183,10 @@ shapeD.analyse()
 cv2.imwrite('cropped5.tiff', shapeD.cropped)
 
 
+############################################
+# analyse 5 Pictures
+############################################
+
+
+
 cv2.waitKey(0)

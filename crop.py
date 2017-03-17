@@ -76,9 +76,6 @@ class ColorFilter():
     l_black = np.array([0, 0, 0])
     u_black = np.array([220, 50, 100])
 
-    #lower_red = np.array([170, 100, 100])
-    #upper_red = np.array([180, 255, 255])
-
     # lower mask (0-10)
     lower_red = np.array([0, 100, 10])
     upper_red = np.array([10, 255, 255])
@@ -146,9 +143,6 @@ class ShapeDetecter():
     radius2 = 0
 
     pts = 0
-
-    #l_black = np.array([0, 0, 0])
-    #u_black = np.array([220, 50, 100])
 
     # lower mask (0-10)
     lower_black = np.array([0, 0, 0])
@@ -273,45 +267,3 @@ class ShapeDetecter():
             #print(height, width)
 
 
-#gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
-
-#l_black = np.array([0, 0, 0])
-#u_black = np.array([220, 50, 100])
-
-#hsv = cv2.cvtColor(img, cv2.COLOR_BGR2HSV)
-#mask = cv2.inRange(hsv, l_black, u_black)
-#res = cv2.bitwise_and(img,img, mask=mask)
-
-
-###open-closing
-#kernel = np.ones((15,15),np.uint8)
-#closing = cv2.morphologyEx(mask, cv2.MORPH_CLOSE, kernel)
-
-#opening = cv2.morphologyEx(closing, cv2.MORPH_OPEN, kernel)
-
-#blurred = cv2.GaussianBlur(opening, (5, 5), 0)
-
-#hsv2 = cv2.cvtColor(blurred, cv2.COLOR_BGR2HSV)
-#mask2 = cv2.inRange(hsv2, l_black, u_black)
-
-#cv2.imshow("imgCompl", blurred)
-
-### pytesseract
-#cv2.imwrite("fortesseract.jpg", blurred)
-#A = Image.open("fortesseract.jpg")
-#print(pytesseract.image_to_string(A))
-###
-
-
-
-#crop_img_oben = blurred[0:(int)(height/2), 0:width]
-#crop_img_unten = blurred[(int)(height/2):height,0:width]
-
-#crop_img = img[200:400, 100:300]
-# Crop from x, y, w, h -> 100, 200, 300, 400
-# NOTE: its img[y: y + h, x: x + w] and *not* img[x: x + w, y: y + h]
-#cv2.imshow("cropped_1", crop_img_oben)
-#cv2.imshow("cropped_2,", crop_img_unten)
-
-
-#cv2.waitKey(0)

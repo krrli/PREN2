@@ -6,6 +6,7 @@ import pytesseract
 import numpy as np
 from PIL import Image
 import random
+import roi_number
 
 
 def countConnectedComponents(img):
@@ -57,22 +58,28 @@ while(i < numberOfImages):
     crop_i = []
 
     #img[y: y + h, x: x + w]
-
+    '''
     cropImg_top_top = image_array[i][0:(int)(height/4), 0:width]
     cropImg_top = image_array[i][(int)(height/4):(int)(height/2), 0:width]
     cropImg_bottom = image_array[i][(int)(height / 2):(int)(height*3 / 4), 0:width]
     cropImg_bottom_bottom = image_array[i][(int)(height*3/4):height,0:width]
+    '''
 
-    countConnectedComponents(cropImg_top_top)
-    countConnectedComponents(cropImg_top)
-    countConnectedComponents(cropImg_bottom)
-    countConnectedComponents(cropImg_bottom_bottom)
+    ###roi
+    crop_Array = []
+    crop_Array = roi_number.cropNumber(image_array[i])
 
 
-    cv2.imshow('test1', cropImg_top_top)
-    cv2.imshow('test2', cropImg_top)
-    cv2.imshow('test3', cropImg_bottom)
-    cv2.imshow('test4', cropImg_bottom_bottom)
+    countConnectedComponents(crop_Array[0])
+    countConnectedComponents(crop_Array[1])
+    countConnectedComponents(crop_Array[2])
+    countConnectedComponents(crop_Array[3])
+
+
+    cv2.imshow('test1', crop_Array[0])
+    cv2.imshow('test2', crop_Array[1])
+    cv2.imshow('test3', crop_Array[2])
+    cv2.imshow('test4', crop_Array[3])
 
     #print(i)
 
