@@ -13,7 +13,7 @@ procedure of the parcours is handled here
 class MainBitch:
     def __init__(self):
         self._trafficLightDetector = None
-        self._freedomInterface = FreedomInterface()
+        self._freedomInterface = FreedomInterface('/dev/ttyS0')
         self._romanDetector = None
         self._romanDisplay = None
 

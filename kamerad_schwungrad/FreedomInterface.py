@@ -22,8 +22,8 @@ class FreedomInterface:
     even parity
     1 stop bit
     """
-    def __init__(self):
-        self._serial = serial.Serial('/dev/ttyS0', 9600,
+    def __init__(self, serialPortDevice):
+        self._serial = serial.Serial(serialPortDevice, 9600,
                                      bytesize=serial.EIGHTBITS,
                                      parity=serial.PARITY_EVEN,
                                      stopbits=serial.STOPBITS_ONE,
