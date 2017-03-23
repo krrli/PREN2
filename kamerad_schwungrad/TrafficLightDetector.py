@@ -10,7 +10,7 @@ class TrafficLightDetector:
         return self.count_color(frame, [150, 100, 200], [200, 255, 255]) > 100
 
     def detect_green_traffic_light(self, frame):
-        return self.count_color(frame, [35, 73, 145], [78, 255, 255]) > 100
+        return self.count_color(frame, [35, 150, 145], [78, 255, 255]) > 100
 
     def count_color(self, frame, lower, upper):
         ident = lower[0]
