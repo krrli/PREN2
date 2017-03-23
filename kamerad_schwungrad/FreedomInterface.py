@@ -15,6 +15,8 @@ class FreedomInterface:
     START = b'\x80'
     ROMAN_NUMERAL_REQUEST = b'\x40'
     CURVE = b'\x08'
+    PAUSE = b'\xC0'
+    RESUME = b'\x60'
 
     """
     Initiate the Freedom Interface by opening the Serial-Port
@@ -37,10 +39,13 @@ class FreedomInterface:
     def _get_acknowledge(self):
         x = self._serial.read()
         if x == FreedomInterface.ERROR:
+            print("WARN: Received ERROR from Freedom Board: ", x)
             return False
         if x == FreedomInterface.ACKNOWLEDGE:
+            print("DEBUG: Received ACKNOWLEDGE from Freedom Board:", x)
             return True
         else:
+            print("WARN: Received Garbage from Freedom Board:", x)
             return None # garbage was sent
 
     """
@@ -52,6 +57,7 @@ class FreedomInterface:
         # is received
         self._serial.timeout = None
         self.last_async_command = self._serial.read()
+        print("DEBUG:received async command from Freedom Board: ", self.last_async_command)
         self._serial.timeout = 1
 
     """
@@ -76,6 +82,23 @@ class FreedomInterface:
     """
     def send_start_signal(self):
         self._serial.write(FreedomInterface.START)
+        return self._get_acknowledge()
+
+    """
+     Send a stop signal to the Freedom Board.
+     Send this signal if a picture has been taken and the roman numeral
+     could be detected
+    """
+    def send_resume_signal(self):
+        self._serial.write(FreedomInterface.RESUME)
+        return self._get_acknowledge()
+
+    """
+     Send a stop signal to the Freedom Board.
+     The raspi does this to stop to take a picture.
+    """
+    def send_stop_signal(self):
+        self._serial.write(FreedomInterface.STOP)
         return self._get_acknowledge()
 
     """
