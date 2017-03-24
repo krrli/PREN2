@@ -2,20 +2,64 @@
 Responsible for displaying the roman digit on a 7 segment display.
 """
 import RPi.GPIO as GPIO
+import time
+
+
+
+
+'''
+TODO:
+- Zahl zwösche 1 und 5
+- Bispel för ufruef!
+'''
+
+
+"""
+Use this class to display Roman Digits.
+Possible Digits: 1-5; I-V
+"""
 class RomanDisplay:
 
-    def clearAllDigits(self):
+    """
+    Print Digit.
+    param segment: segment 1 - 5, includes all pins to set to GPIO.HIGH (= azönde)
+    """
+    def printDigit(self, segment, number):
+        print("print number: ", number)
+
+        for segment in segment:
+            GPIO.output(segment, GPIO.HIGH)
+
+    """
+    Setup Segments as GPIO out (define it as output pin).
+    """
+    def seuptAllSegments(self):
         # setup pins as OUT
         for segment in self.allSegments:
-            print("segment auf 0: ", segment)
-            GPIO.setup(segment, 0)
-            # GPIO.cleanup(segment)
+            GPIO.setup(segment, GPIO.OUT)
 
-    def cleanupAll(self):
+    """
+    Set all Segments to GPIO.LOW (=0, ablösche).
+    Reset all Segments
+    """
+    def cleanupAllSegments(self):
+        print("-------- you called cleanupAllSegments --------")
         for segment in self.allSegments:
             GPIO.cleanup(segment)
 
+    def resetAllSegments(self):
+        print("-------- you called resetAllSegments --------")
+        # Alli ablösche
+        for segment in self.allSegments:
+            print("clear digit", segment)
+            GPIO.output(segment, 0)
+
+    """
+    Constructor.
+    """
     def __init__(self):
+
+        print("-------- you called __init__ --------")
         self.allSegments = (7, 11, 13, 15, 29, 31, 33)
         self.segments1 = (15, 33)
         self.segments2 = (13, 15, 7, 29, 31)
@@ -25,44 +69,23 @@ class RomanDisplay:
 
         # setMode of board
         GPIO.setmode(GPIO.BOARD)
+        self.seuptAllSegments()
 
-        # setup pins as OUT
-        for segment in self.allSegments:
-            GPIO.setup(segment, GPIO.OUT)
-
-        self.clearAllDigits();
-
-
-    def printDigit(self, segments):
-        # self.clearAllDigits()
-        for segment in segments:
-            print("segmänt: ", segment)
-            GPIO.output(segment, 1)
-
-    def clearDigit(self, segments):
-        # wait for 1sec
-        # time.sleep(1)
-        for segment in segments:
-            print("clear digit")
-            GPIO.output(segment, 0)
-
+    """
+    Function which can be called to display digits on 7Segment.
+    """
     def display_number(self, number):
-        if number == 1:
-            print("zeig s ", number, "\n")
-            self.printDigit(self.segments1)
-            # self.clearDigit(self.segments1)
-        if number == 2:
-            print("zeig s ", number, "\n")
-            self.printDigit(self.segments2)
-        if number == 3:
-            print("zeig s ", number, "\n")
-            self.printDigit(self.segments3)
-        if number == 4:
-            print("zeig s ", number, "\n")
-            self.printDigit(self.segments4)
-        if number == 5:
-            print("zeig s ", number, "\n")
-            self.printDigit(self.segments5)
+        print("-------- you called display_number --------")
+        print("zeig s ", number, "\n")
+        segments =  {1: self.segments1,
+                    2: self.segments2,
+                    3: self.segments3,
+                    4: self.segments4,
+                    5: self.segments5,
+                    }
+        if(number in segments):
+           self.printDigit(segments[number],number)
 
-
+           # ond söscht so? --> abfo!
+           #  evtl. eifach s füfi nä? oder random?
 

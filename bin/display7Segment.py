@@ -15,10 +15,32 @@ if inputInt > 5 or inputInt < 1:
 display = RomanDisplay()
 
 number_to_display = inputInt
-print("Displaying number", inputInt)
+# print("Displaying number", inputInt)
 
 display.display_number(inputInt)
 time.sleep(5)
+display.resetAllSegments()
 
+# hier nur ablösche, ned cleanup!!!!
 
-display.cleanupAll()
+inputInt = int(input("Enter a number to display: "))
+display.display_number(inputInt)
+time.sleep(5)
+display.resetAllSegments()
+
+inputInt = int(input("Enter a number to display: "))
+display.display_number(inputInt)
+time.sleep(5)
+display.resetAllSegments()
+
+inputInt = int(input("Enter a number to display: "))
+display.display_number(inputInt)
+time.sleep(5)
+display.resetAllSegments()
+
+inputInt = int(input("Enter a number to display: "))
+display.display_number(inputInt)
+time.sleep(5)
+display.resetAllSegments()
+
+display.cleanupAllSegments()
