@@ -2,11 +2,12 @@
 #07.03.17
 #main
 
+import os, os.path
+import time
 import cv2
 import numpy as np
-import sys
-import crop
 
+from RomanNumberDetector import crop, analyse
 
 '''
 #call: python main_RomanNumber.py 1
@@ -35,7 +36,18 @@ CharacterEval = [0]*100
 
 i = 1
 
+#Timeout
+timeout = 2
+timeLeft = 0
+timeStored = 0
+timeOutSet = 0
+#
+
 while(True):
+
+    if(timeStored == 1 and timeOutSet == 1 and time.time() > timeLeft):
+        break
+
     # Capture frame-by-frame
     ret, frame = cap.read()
 
@@ -81,33 +93,44 @@ while(True):
                 # Only look for rectangles
                 if len(approxCurve) == 4:
                     rect = cv2.boundingRect(approxCurve)
-                    # Only save Rectangles with height of 250+
-                    if rect[3] >= 150:
+                    # Only save Rectangles with height of 150+
+                    if rect[3] >= 100:
                         rectangleList.append(rect)
                         barCount += 1
 
         # Only if exactly 2 Red bars were found, save them to the Picture array
         if barCount == 2:
 
+            ####TODO
+            ####Stop Rover 1 Second and take so many Pictures as possible
+            #####Stop Rover 1 second
+
+            if(timeStored == 0):
+                timeLeft = time.time() + timeout
+                timeStored = 1
+
             print('found')
 
-            if(i == 1):
-                cv2.imwrite("romannumber1.tiff", frame)
-                i = i+1
-            elif(i == 2):
-                cv2.imwrite("romannumber2.tiff", frame)
-                i = i+1
-            elif(i == 3):
-                cv2.imwrite("romannumber3.tiff", frame)
-                i = i+1
+            if (i == 1):
+                cv2.imwrite("./RomanNumberDetector/numbers/romannumber1.tiff", frame)
+                timeout = time.time() + 2
+                timeOutSet = 1
+                i = i + 1
+            elif (i == 2):
+                cv2.imwrite("./RomanNumberDetector/numbers/romannumber2.tiff", frame)
+                i = i + 1
+            elif (i == 3):
+                cv2.imwrite("./RomanNumberDetector/numbers/romannumber3.tiff", frame)
+                i = i + 1
             elif (i == 4):
-                cv2.imwrite("romannumber4.tiff", frame)
+                cv2.imwrite("./RomanNumberDetector/numbers/romannumber4.tiff", frame)
                 i = i + 1
             elif (i == 5):
-                cv2.imwrite("romannumber5.tiff", frame)
+                cv2.imwrite("./RomanNumberDetector/numbers/romannumber5.tiff", frame)
                 i = i + 1
-            elif(i == 6):
+            elif (i == 6):
                 break
+
 
     cv2.imshow('frame', frame)
 
@@ -119,74 +142,46 @@ while(True):
 
 
 ############################################
-# CROP 5 the Pictures
+# CROP Pictures
 ############################################
 
-##Picture 1
-img = cv2.imread("romannumber1.tiff")
-width = 800
-height = 600
-colorFilter = crop.ColorFilter(img)
-colorFilter.filterRed()
-colorFilter.closing(colorFilter.mask)
-#colorFilter.showImg('closing',colorFilter.closing)
-shapeD = crop.ShapeDetecter(img, colorFilter.closing)
-shapeD.analyse()
-cv2.imwrite('cropped1.tiff', shapeD.cropped)
+cropped = []
 
-##Picture 2
-img = cv2.imread("romannumber2.tiff")
-width = 800
-height = 600
-colorFilter = crop.ColorFilter(img)
-colorFilter.filterRed()
-colorFilter.closing(colorFilter.mask)
-#colorFilter.showImg('closing',colorFilter.closing)
-shapeD = crop.ShapeDetecter(img, colorFilter.closing)
-shapeD.analyse()
-cv2.imwrite('cropped2.tiff', shapeD.cropped)
+# image path and valid extensions
+imageDir = "./RomanNumberDetector/numbers"  # specify your path here
+image_path_list = []
+valid_image_extensions = [".tiff"]  # specify your vald extensions here
+valid_image_extensions = [item.lower() for item in valid_image_extensions]
 
-##Picture 3
-img = cv2.imread("romannumber3.tiff")
-width = 800
-height = 600
-colorFilter = crop.ColorFilter(img)
-colorFilter.filterRed()
-colorFilter.closing(colorFilter.mask)
-#colorFilter.showImg('closing',colorFilter.closing)
-shapeD = crop.ShapeDetecter(img, colorFilter.closing)
-shapeD.analyse()
-cv2.imwrite('cropped3.tiff', shapeD.cropped)
+# create a list all files in directory and
+# append files with a vaild extention to image_path_list
+for file in os.listdir(imageDir):
+    extension = os.path.splitext(file)[1]
+    if extension.lower() not in valid_image_extensions:
+        continue
+    image_path_list.append(os.path.join(imageDir, file))
 
-##Picture 4
-img = cv2.imread("romannumber4.tiff")
-width = 800
-height = 600
-colorFilter = crop.ColorFilter(img)
-colorFilter.filterRed()
-colorFilter.closing(colorFilter.mask)
-#colorFilter.showImg('closing',colorFilter.closing)
-shapeD = crop.ShapeDetecter(img, colorFilter.closing)
-shapeD.analyse()
-cv2.imwrite('cropped4.tiff', shapeD.cropped)
+# loop through image_path_list to open each image
+for imagePath in image_path_list:
+    img = cv2.imread(imagePath)
 
-##Picture 5
-img = cv2.imread("romannumber5.tiff")
-width = 800
-height = 600
-colorFilter = crop.ColorFilter(img)
-colorFilter.filterRed()
-colorFilter.closing(colorFilter.mask)
-#colorFilter.showImg('closing',colorFilter.closing)
-shapeD = crop.ShapeDetecter(img, colorFilter.closing)
-shapeD.analyse()
-cv2.imwrite('cropped5.tiff', shapeD.cropped)
+    colorFilter = crop.ColorFilter(img)
+    colorFilter.filterRed()
+    colorFilter.closing(colorFilter.mask)
+    # colorFilter.showImg('closing',colorFilter.closing)
+    shapeD = crop.ShapeDetecter(img, colorFilter.closing)
+    cropped.append(shapeD.analyse())
 
 
 ############################################
-# analyse 5 Pictures
+# analyse Pictures
 ############################################
 
+detectedNumber = []
 
+for abc in cropped:
+    detectedNumber.append(analyse.analyseNumber(abc))
+
+print(detectedNumber)
 
 cv2.waitKey(0)

@@ -4,8 +4,8 @@ import numpy as np
 def cropNumber(image):
     #im = cv2.imread(image)
     im = image
-    imgray = cv2.cvtColor(im, cv2.COLOR_BGR2GRAY)
-    ret, thresh = cv2.threshold(imgray, 127, 255, 0)
+    #imgray = cv2.cvtColor(im, cv2.COLOR_BGR2GRAY)
+    ret, thresh = cv2.threshold(im, 127, 255, 0)
     im2, contours, hierarchy = cv2.findContours(thresh, cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE)
 
     # only keep the largest contours
@@ -37,7 +37,7 @@ def cropNumber(image):
     #print(box)
     #print(h_new)
 
-    _, width, _ = im.shape
+    _ ,width = im.shape
 
     cropImg_top_top = im[(int)(yStart):(int)(yEnd - 3 * h_new / 4), 0:width]
 
@@ -54,14 +54,3 @@ def cropNumber(image):
     cropArray.append(cropImg_bottom_bottom)
 
     return cropArray
-
-
-    #cv2.imshow('thresh', thresh)
-    #cv2.imshow('contours', im)
-    #cv2.waitKey(0)
-
-    #cv2.imshow('toptop', cropImg_top_top)
-    #cv2.imshow('top', cropImg_top)
-    #cv2.imshow('bottom', cropImg_bottom)
-    #cv2.imshow('bottombottom', cropImg_bottom_bottom)
-    #cv2.waitKey(0)

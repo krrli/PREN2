@@ -1,6 +1,7 @@
 import cv2
 import numpy as np
 
+
 def order_points(pts):
     # initialzie a list of coordinates that will be ordered
     # such that the first entry in the list is the top-left,
@@ -170,7 +171,6 @@ class ShapeDetecter():
 
         #### change between 1 - 5
         if len(contours) > 1:
-
             areaArray = []
 
             for i, c in enumerate(contours):
@@ -190,9 +190,9 @@ class ShapeDetecter():
             box_1 = np.int0(box)
 
             # draw contours
-            cv2.drawContours(self.frame, [box_1], 0, (0, 0, 255), 3)
+            #cv2.drawContours(self.frame, [box_1], 0, (0, 0, 255), 3)
             # calculate center and radius of minimum enclosing circle
-            (x, y), radius = cv2.minEnclosingCircle(c)
+            (x, y), radius = cv2.minEnclosingCircle(largestcontour)
             # cast to integers
             center = (int(x), int(y))
             self.x1 = x
@@ -212,9 +212,9 @@ class ShapeDetecter():
             box_2 = np.int0(box)
 
             # draw contours
-            cv2.drawContours(self.frame, [box_2], 0, (0, 0, 255), 3)
+            #cv2.drawContours(self.frame, [box_2], 0, (0, 0, 255), 3)
             # calculate center and radius of minimum enclosing circle
-            (x, y), radius = cv2.minEnclosingCircle(c)
+            (x, y), radius = cv2.minEnclosingCircle(secondlagestcontour)
             # cast to integers
             center = (int(x), int(y))
             self.x2 = x
@@ -226,44 +226,85 @@ class ShapeDetecter():
 
             #cv2.drawContours(self.frame, contours, -1, (255, 0, 0), 1)
 
-            #######
-            pts = np.vstack((box_1, box_2)).squeeze()
+            ############
+
+            box_1 = order_points(box_1)
+            box_2 = order_points(box_2)
+
+            if(self.x2 > self.x1):
+                tl = box_1[1]
+                bl = box_1[2]
+                tr = box_2[0]
+                br = box_2[3]
+
+            else:
+                tl = box_2[1]
+                bl = box_2[2]
+                tr = box_1[0]
+                br = box_1[3]
+
+            ############
+
+            #pts = np.vstack((box_1, box_2)).squeeze()
+            pts = np.vstack((tl,tr,bl,br)).squeeze()
+
             warped = four_point_transform(self.frame, pts)
 
             #Var1
             #warped = cv2.medianBlur(warped, 5)
             imgray = cv2.cvtColor(warped, cv2.COLOR_BGR2GRAY)
+
+            cv2.imshow('imgray', imgray)
+            cv2.waitKey(0)
+
             #cv2.imshow('test',imgray)
-            ret, thresh = cv2.threshold(imgray, 50, 255, cv2.THRESH_BINARY_INV)
+            #ret, thresh = cv2.threshold(imgray, 50, 255, cv2.THRESH_BINARY_INV)
+
+            ret, thresh = cv2.threshold(imgray, 127, 255, cv2.THRESH_BINARY_INV+cv2.THRESH_OTSU)
+
+
+            cv2.imshow('thresh', thresh)
+            cv2.waitKey(0)
 
             #cv2.imshow('test2', thresh)
 
             #th3 = cv2.adaptiveThreshold(imgray, 255, cv2.ADAPTIVE_THRESH_GAUSSIAN_C, cv2.THRESH_BINARY, 11, 2)
 
             ##Var2
-            hsv2 = cv2.cvtColor(warped, cv2.COLOR_BGR2HSV)
-            mask0 = cv2.inRange(hsv2, self.lower_black, self.upper_black)
-            mask1 = cv2.inRange(hsv2, self.lower_black, self.upper_black)
+            #hsv2 = cv2.cvtColor(warped, cv2.COLOR_BGR2HSV)
+            #mask0 = cv2.inRange(hsv2, self.lower_black, self.upper_black)
+            #mask1 = cv2.inRange(hsv2, self.lower_black, self.upper_black)
             #mask2 = cv2.inRange(hsv2, self.l_black, self.u_black)
-            black_hue_image = cv2.addWeighted(mask0, 1.0, mask1, 1.0, 0.0)
+            #black_hue_image = cv2.addWeighted(mask0, 1.0, mask1, 1.0, 0.0)
             #test = cv2.GaussianBlur(black_hue_image, (9, 9), 0)
 
             kernel = np.ones((5, 5), np.uint8)
             #Var2
             #closing = cv2.morphologyEx(black_hue_image, cv2.MORPH_CLOSE, kernel)
             #Var1
-            closing = cv2.morphologyEx(thresh, cv2.MORPH_CLOSE, kernel)
+
+            opening = cv2.morphologyEx(thresh, cv2.MORPH_OPEN, kernel)
 
             kernel = np.ones((5, 5), np.uint8)
-            opening = cv2.morphologyEx(closing, cv2.MORPH_OPEN, kernel)
+
+            closing = cv2.morphologyEx(opening, cv2.MORPH_CLOSE, kernel)
+
+
+
             #blurred = cv2.GaussianBlur(opening, (5, 5), 0)
 
-            self.cropped = opening
+            self.cropped = closing
 
             #cv2.imshow("opening", opening)
 
-            #height, width = opening.shape
+            height, width = closing.shape
 
             #print(height, width)
+
+            #print(height, width)
+
+            return closing
+
+
 
 
