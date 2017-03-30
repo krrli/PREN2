@@ -1,5 +1,6 @@
 
 from kamerad_schwungrad.FreedomInterface import FreedomInterface
+from kamerad_schwungrad.TrafficLightDetector import TrafficLightDetector
 import random
 import time
 
@@ -13,7 +14,8 @@ procedure of the parcours is handled here
 
 class MainBitch:
     def __init__(self):
-        self._trafficLightDetector = None
+        self._trafficLightDetector = TrafficLightDetector()
+        self._cameraToUse = 1
         self._freedomInterface = FreedomInterface('/dev/ttyS0')
         self._romanDetector = None
         self._romanDisplay = None
@@ -22,7 +24,9 @@ class MainBitch:
     Drive the whole Parcours.
     """
     def run_parcour(self):
-        self.wait_for_traffic_light()
+        while not self.wait_for_traffic_light():
+            pass
+
         self._freedomInterface.send_start_signal()
         while True:
             self.handle_freedom_interface()
@@ -61,4 +65,18 @@ class MainBitch:
     Blocks until the traffic light is green.
     """
     def wait_for_traffic_light(self):
-        pass
+        was_red = False
+        with cv2.VideoCapture(self._cameraToUse) as camera:
+            ret, frame = camera.read()
+            if frame is None:
+                print("ERROR: no cammera picture :(")
+                return False
+
+            is_red = traffic_light.detect_red_traffic_light(frame)
+            is_green = traffic_light.detect_green_traffic_light(frame)
+
+            if is_green and not red and was_red
+                return True
+
+            was_red = is_red
+            time.sleep(0.1)
