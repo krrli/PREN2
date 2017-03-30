@@ -1,6 +1,7 @@
 
 from kamerad_schwungrad.FreedomInterface import FreedomInterface
 from kamerad_schwungrad.TrafficLightDetector import TrafficLightDetector
+from kamerad_schwungrad.RomanDisplay import RomanDisplay
 import random
 import time
 
@@ -18,7 +19,8 @@ class MainBitch:
         self._cameraToUse = 1
         self._freedomInterface = FreedomInterface('/dev/ttyS0')
         self._romanDetector = None
-        self._romanDisplay = None
+        self._romanDisplay = RomanDisplay()
+        self._romanDigit = 1
 
     """
     Drive the whole Parcours.
@@ -40,8 +42,7 @@ class MainBitch:
             self._freedomInterface.wait_for_command()
 
         if self._freedomInterface.roman_numeral_requested():
-            # TODO: replace this with actual roman numeral
-            self._freedomInterface.send_roman_numeral(random.randint(1,5))
+            self._freedomInterface.send_roman_numeral(self._romanDigit)
 
         if self._freedomInterface.curve_signaled():
             self._freedomInterface.send_acknowledge()
@@ -59,6 +60,9 @@ class MainBitch:
         if int(time.time()) % 5 == 0:
             self._freedomInterface.send_stop_signal()
             time.sleep(2)
+            # TODO: replace this with actual roman numeral instead of a random one
+            self._romanDigit = random.randint(1,5)
+            self._romanDisplay.printDigit(self._romanDigit)
             self._freedomInterface.send_start_signal()
 
     """
@@ -69,13 +73,13 @@ class MainBitch:
         with cv2.VideoCapture(self._cameraToUse) as camera:
             ret, frame = camera.read()
             if frame is None:
-                print("ERROR: no cammera picture :(")
+                print("ERROR: no camera picture :(")
                 return False
 
             is_red = traffic_light.detect_red_traffic_light(frame)
             is_green = traffic_light.detect_green_traffic_light(frame)
 
-            if is_green and not red and was_red
+            if is_green and not red and was_red:
                 return True
 
             was_red = is_red
