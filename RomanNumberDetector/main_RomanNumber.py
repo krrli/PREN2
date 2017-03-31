@@ -109,24 +109,28 @@ while(True):
                 timeLeft = time.time() + timeout
                 timeStored = 1
 
-            print('found')
+            print('found ')
+
+            # path = os.path.abspath("C:/Code/PREN2/RomanNumberDetector/numbers/romannumber")
+            path = os.path.join(os.path.dirname(os.path.realpath(__file__)), "numbers")
+            completePath = path + "/" + str(i) + ".tiff"
 
             if (i == 1):
-                cv2.imwrite("./RomanNumberDetector/numbers/romannumber1.tiff", frame)
+                cv2.imwrite(completePath, frame)
                 timeout = time.time() + 2
                 timeOutSet = 1
                 i = i + 1
             elif (i == 2):
-                cv2.imwrite("./RomanNumberDetector/numbers/romannumber2.tiff", frame)
+                cv2.imwrite(completePath, frame)
                 i = i + 1
             elif (i == 3):
-                cv2.imwrite("./RomanNumberDetector/numbers/romannumber3.tiff", frame)
+                cv2.imwrite(completePath, frame)
                 i = i + 1
             elif (i == 4):
-                cv2.imwrite("./RomanNumberDetector/numbers/romannumber4.tiff", frame)
+                cv2.imwrite(completePath, frame)
                 i = i + 1
             elif (i == 5):
-                cv2.imwrite("./RomanNumberDetector/numbers/romannumber5.tiff", frame)
+                cv2.imwrite(completePath, frame)
                 i = i + 1
             elif (i == 6):
                 break
@@ -148,7 +152,12 @@ while(True):
 cropped = []
 
 # image path and valid extensions
-imageDir = "./RomanNumberDetector/numbers"  # specify your path here
+# imageDir = "~/RomanNumberDetector/numbers"  # specify your path here
+# imageDir = os.path.abspath("C:/Code/PREN2/RomanNumberDetector/numbers")
+imageDir = os.path.join(os.path.dirname(os.path.realpath(__file__)), "numbers")
+print(imageDir)
+
+
 image_path_list = []
 valid_image_extensions = [".tiff"]  # specify your vald extensions here
 valid_image_extensions = [item.lower() for item in valid_image_extensions]
