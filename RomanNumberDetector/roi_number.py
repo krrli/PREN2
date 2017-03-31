@@ -27,12 +27,15 @@ def cropNumber(image):
         minCord = np.amin(c, axis=0)
         maxCord = np.amax(c, axis=0)
 
+        yEnd = 0
         yStart = minCord[0][1]
         yEnd = maxCord[0][1]
 
         #print(yStart, yEnd)
-
-    h_new = yEnd - yStart
+    if(yEnd == 0):
+        _, yEnd = im.shape
+    else:
+        h_new = yEnd - yStart
 
     #print(box)
     #print(h_new)

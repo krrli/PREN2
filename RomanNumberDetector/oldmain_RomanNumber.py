@@ -1,6 +1,6 @@
 #OpenCV3
 #07.03.17
-#main
+#old main
 
 import os, os.path
 import time
@@ -8,6 +8,7 @@ import cv2
 import numpy as np
 
 from RomanNumberDetector import crop, analyse
+
 
 '''
 #call: python main_RomanNumber.py 1
@@ -31,8 +32,8 @@ else:
 cap = cv2.VideoCapture(0)
 
 hasCharacterBeenEvaluated = False
-RomanPictures = []
-CharacterEval = [0]*100
+#RomanPictures = []
+#CharacterEval = [0]*100
 
 i = 1
 
@@ -193,10 +194,7 @@ for abc in cropped:
 
 print(detectedNumber)
 
-
-
-'''
-count = [5]
+count = [0] * 5
 
 for abc in detectedNumber:
 
@@ -210,9 +208,25 @@ for abc in detectedNumber:
         count[3] = count[3] + 1
     if(abc == 5):
         count[4] = count[4] + 1
-'''
 
+c = 5
 
-
+while (c > 0):
+    if(count[0] == c):
+        print(1)
+        break
+    if(count[1] == c):
+        print(2)
+        break
+    if(count[2] == c):
+        print(3)
+        break
+    if(count[3] == c):
+        print(4)
+        break
+    if(count[4] == c):
+        print(5)
+        break
+    c = c-1
 
 cv2.waitKey(0)

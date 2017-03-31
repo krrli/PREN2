@@ -1,8 +1,6 @@
 #analyse the cropped Images
-#to be done
 
 import cv2
-
 from RomanNumberDetector import roi_number
 
 def countConnectedComponents(img):
