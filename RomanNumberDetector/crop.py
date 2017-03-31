@@ -254,8 +254,8 @@ class ShapeDetecter():
             #warped = cv2.medianBlur(warped, 5)
             imgray = cv2.cvtColor(warped, cv2.COLOR_BGR2GRAY)
 
-            cv2.imshow('imgray', imgray)
-            cv2.waitKey(0)
+            #cv2.imshow('imgray', imgray)
+            #cv2.waitKey(0)
 
             #cv2.imshow('test',imgray)
             #ret, thresh = cv2.threshold(imgray, 50, 255, cv2.THRESH_BINARY_INV)
@@ -263,8 +263,8 @@ class ShapeDetecter():
             ret, thresh = cv2.threshold(imgray, 127, 255, cv2.THRESH_BINARY_INV+cv2.THRESH_OTSU)
 
 
-            cv2.imshow('thresh', thresh)
-            cv2.waitKey(0)
+            #cv2.imshow('thresh', thresh)
+            #cv2.waitKey(0)
 
             #cv2.imshow('test2', thresh)
 

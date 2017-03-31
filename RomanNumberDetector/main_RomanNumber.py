@@ -184,4 +184,26 @@ for abc in cropped:
 
 print(detectedNumber)
 
+
+
+'''
+count = [5]
+
+for abc in detectedNumber:
+
+    if(abc == 1):
+        count[0] = count[0] + 1
+    if(abc == 2):
+        count[1] = count[1] + 1
+    if(abc == 3):
+        count[2] = count[2] + 1
+    if(abc == 4):
+        count[3] = count[3] + 1
+    if(abc == 5):
+        count[4] = count[4] + 1
+'''
+
+
+
+
 cv2.waitKey(0)

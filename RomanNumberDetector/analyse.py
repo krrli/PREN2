@@ -51,10 +51,10 @@ def analyseNumber(image):
     countConnectedComponents(crop_Array[2])
     countConnectedComponents(crop_Array[3])
 
-    cv2.imshow('test1', crop_Array[0])
-    cv2.imshow('test2', crop_Array[1])
-    cv2.imshow('test3', crop_Array[2])
-    cv2.imshow('test4', crop_Array[3])
+    #cv2.imshow('test1', crop_Array[0])
+    #cv2.imshow('test2', crop_Array[1])
+    #cv2.imshow('test3', crop_Array[2])
+    #cv2.imshow('test4', crop_Array[3])
 
 
     #print(countedComponents)
