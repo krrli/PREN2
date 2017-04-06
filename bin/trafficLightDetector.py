@@ -24,7 +24,9 @@ while True:
         print("GREEN")
     else:
         print("NONE")
-    time.sleep(0.1)
+    # time.sleep(0.1)
+    while cv2.waitKey() & 0xFF == 'q':
+        pass
 
 
 cap.release()
