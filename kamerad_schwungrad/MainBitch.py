@@ -1,6 +1,7 @@
 
 from kamerad_schwungrad.FreedomInterface import FreedomInterface
 from kamerad_schwungrad.TrafficLightDetector import TrafficLightDetector
+from RomanNumberDetector.RomanDetector import RomanDetector
 from kamerad_schwungrad.RomanDisplay import RomanDisplay
 import random
 import time
@@ -18,7 +19,7 @@ class MainBitch:
         self._trafficLightDetector = TrafficLightDetector()
         self._cameraToUse = 1
         self._freedomInterface = FreedomInterface('/dev/ttyS0')
-        self._romanDetector = None
+        self._romanDetector = RomanDetector(0)
         self._romanDisplay = RomanDisplay()
         self._romanDigit = 1
 
@@ -57,13 +58,15 @@ class MainBitch:
     def handle_roman_numeral_detection(self):
         # send a stop signal every five seconds for 2 seconds
         # just to test the thing
-        if int(time.time()) % 5 == 0:
-            self._freedomInterface.send_stop_signal()
-            time.sleep(2)
-            # TODO: replace this with actual roman numeral instead of a random one
-            self._romanDigit = random.randint(1,5)
+        # if int(time.time()) % 5 == 0:
+        #   self._freedomInterface.send_stop_signal()
+        #    time.sleep(2)
+        # TODO: maybe stop to take pictures
+        digit = self._romanDetector.startNumberDetection()
+        if digit != 0:
+            self._romanDigit =digit
             self._romanDisplay.printDigit(self._romanDigit)
-            self._freedomInterface.send_start_signal()
+        #     self._freedomInterface.send_start_signal()
 
     """
     Blocks until the traffic light is green.
