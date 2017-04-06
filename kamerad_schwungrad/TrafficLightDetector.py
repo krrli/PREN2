@@ -6,11 +6,15 @@ class TrafficLightDetector:
     def __init__(self):
         pass
 
+    def cut_frame(self, frame):
+        cut_width = len(frame[0]) // 2
+        return frame[:, 0:cut_width]
+
     def detect_red_traffic_light(self, frame):
-        return self.count_color(frame, [150, 100, 200], [200, 255, 255]) > 100
+        return self.count_color(self.cut_frame(frame), [150, 100, 200], [200, 255, 255]) > 100
 
     def detect_green_traffic_light(self, frame):
-        return self.count_color(frame, [35, 150, 145], [78, 255, 255]) > 100
+        return self.count_color(self.cut_frame(frame), [35, 150, 145], [78, 255, 255]) > 100
 
     def count_color(self, frame, lower, upper):
         # ident = lower[0]
