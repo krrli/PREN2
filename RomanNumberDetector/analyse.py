@@ -44,37 +44,42 @@ def analyseNumber(image):
     crop_Array = []
     crop_Array = roi_number.cropNumber(image)
 
-    countConnectedComponents(crop_Array[0])
-    countConnectedComponents(crop_Array[1])
-    countConnectedComponents(crop_Array[2])
-    countConnectedComponents(crop_Array[3])
+    try:
 
-    #cv2.imshow('test1', crop_Array[0])
-    #cv2.imshow('test2', crop_Array[1])
-    #cv2.imshow('test3', crop_Array[2])
-    #cv2.imshow('test4', crop_Array[3])
+        countConnectedComponents(crop_Array[0])
+        countConnectedComponents(crop_Array[1])
+        countConnectedComponents(crop_Array[2])
+        countConnectedComponents(crop_Array[3])
+
+        #cv2.imshow('test1', crop_Array[0])
+        #cv2.imshow('test2', crop_Array[1])
+        #cv2.imshow('test3', crop_Array[2])
+        #cv2.imshow('test4', crop_Array[3])
 
 
-    #print(countedComponents)
+        #print(countedComponents)
 
-    if (countedComponents[1] == 3 and countedComponents[3] == 2):
-        #print(4)
-        return 4
-    elif (countedComponents[1] == 2 and countedComponents[2] == 1):
-        #print(5)
-        return 5
-    elif (countedComponents[1] == 1 and countedComponents[2] == 1):
-        #print(1)
-        return 1
-    elif (countedComponents[1] == 2 and countedComponents[2] == 2):
-        #print(2)
-        return 2
-    elif (countedComponents[1] == 3 and countedComponents[2] == 3):
-        #print(3)
-        return 3
-    else:
-        #randomNumb = (str)(random.randint(1, 5))
-        #print("random " + randomNumb)
+        if (countedComponents[1] == 3 and countedComponents[3] == 2):
+            #print(4)
+            return 4
+        elif (countedComponents[1] == 2 and countedComponents[2] == 1):
+            #print(5)
+            return 5
+        elif (countedComponents[1] == 1 and countedComponents[2] == 1):
+            #print(1)
+            return 1
+        elif (countedComponents[1] == 2 and countedComponents[2] == 2):
+            #print(2)
+            return 2
+        elif (countedComponents[1] == 3 and countedComponents[2] == 3):
+            #print(3)
+            return 3
+        else:
+            #randomNumb = (str)(random.randint(1, 5))
+            #print("random " + randomNumb)
+            return 0
+
+        #cv2.waitKey(0)
+
+    except:
         return 0
-
-#cv2.waitKey(0)
