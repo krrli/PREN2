@@ -107,7 +107,6 @@ class MainBitch:
     Blocks until the traffic light is green.
     """
     def wait_for_traffic_light(self):
-        return True
         was_red = False
         try:
             camera = cv2.VideoCapture(self._cameraToUse)
@@ -116,10 +115,10 @@ class MainBitch:
                 print("ERROR: no camera picture :(")
                 return False
 
-            is_red = traffic_light.detect_red_traffic_light(frame)
-            is_green = traffic_light.detect_green_traffic_light(frame)
+            is_red = self._trafficLightDetector.detect_red_traffic_light(frame)
+            is_green = self._trafficLightDetector.detect_green_traffic_light(frame)
 
-            if is_green and not red and was_red:
+            if is_green and not is_red and was_red:
                 return True
 
             was_red = is_red
