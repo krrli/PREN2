@@ -17,8 +17,8 @@ class TrafficLightDetector:
         return self.count_color(self.cut_frame(frame), [35, 150, 145], [78, 255, 255]) > 100
 
     def count_color(self, frame, lower, upper):
-        # ident = lower[0]
-        # cv2.imshow('orig', frame)
+        ident = lower[0]
+        cv2.imshow('orig', frame)
         hsv = cv2.cvtColor(frame, cv2.COLOR_BGR2HSV)
 
         lower = np.array(lower, dtype="uint8")
@@ -28,10 +28,10 @@ class TrafficLightDetector:
         mask = cv2.inRange(hsv, lower, upper)
         res = cv2.bitwise_and(frame, frame, mask=mask)
 
-        # cv2.imshow('maskcolor'+str(ident), mask)
-        # cv2.imshow('rescolor'+str(ident), res)
+        cv2.imshow('maskcolor'+str(ident), mask)
+        cv2.imshow('rescolor'+str(ident), res)
         countcolor = cv2.countNonZero(mask)
         # while cv2.waitKey() & 0xFF == 'q':
-        #    pass
-        print(countcolor)
+           # pass
+        print(ident, countcolor)
         return countcolor

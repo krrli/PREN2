@@ -1,3 +1,4 @@
+from serial.serialutil import SerialException
 
 from kamerad_schwungrad.FreedomInterface import FreedomInterface
 from kamerad_schwungrad.TrafficLightDetector import TrafficLightDetector
@@ -5,6 +6,7 @@ from RomanNumberDetector.RomanDetector import RomanDetector
 from kamerad_schwungrad.RomanDisplay import RomanDisplay
 import random
 import time
+import cv2
 
 """
 This is the Main class that gets started
@@ -17,10 +19,10 @@ procedure of the parcours is handled here
 class MainBitch:
     def __init__(self):
         self._trafficLightDetector = TrafficLightDetector()
-        self._cameraToUse = 1
+        self._cameraToUse = 0
         self._freedomInterface = FreedomInterface('/dev/ttyS0')
-        self._romanDetector = RomanDetector(0)
-        self._romanDisplay = RomanDisplay()
+        self._romanDetector = RomanDetector(self._cameraToUse)
+        self._romanDisplay = None# RomanDisplay()
         self._romanDigit = 1
 
     """
@@ -30,26 +32,59 @@ class MainBitch:
         while not self.wait_for_traffic_light():
             pass
 
-        self._freedomInterface.send_start_signal()
-        while True:
-            self.handle_freedom_interface()
-            self.handle_roman_numeral_detection()
+        tries = 1
+        while tries <= 3:
+            try:
+                print("MAIN: sending start signal (try " + str(tries) + ")")
+                tries += 1
+                self._freedomInterface.open_port()
+                response = self._freedomInterface.send_start_signal()
+                if response is None:
+                    print("MAIN: start signal was not acknowledged (nothing received)")
+
+                if not response:
+                    print("MAIN: ERROR after start signal")
+
+                if response:
+                    print("MAIN: started")
+                    parcours_finished = False
+                    while not parcours_finished:
+                        # self.handle_roman_numeral_detection()
+                        parcours_finished = self.handle_freedom_interface()
+                    break
+            except SerialException:
+                print("MAIN: Could not use Serial Port?")
+            finally:
+                self._freedomInterface.close_port()
+
 
     """
     Handles the communication with the Freedom Board
     """
     def handle_freedom_interface(self):
-        if not self._freedomInterface.no_command_received():
-            self._freedomInterface.wait_for_command()
+        try:
+            self._freedomInterface.check_command_received()
+        except (SerialException, OSError):
+            print("F3DM: Error reading serial port")
+            print("F3DM: trying to reopen serial port")
+            self._freedomInterface.close_port()
+            self._freedomInterface.open_port()
 
         if self._freedomInterface.roman_numeral_requested():
-            self._freedomInterface.send_roman_numeral(self._romanDigit)
+            print("F3DM: roman numeral requested")
+            while not (self._freedomInterface.send_roman_numeral(self._romanDigit) == True):
+                pass
+            return True
 
         if self._freedomInterface.curve_signaled():
+            print("F3DM: curve was signaled")
             self._freedomInterface.send_acknowledge()
 
         if self._freedomInterface.invalid_command_received():
+            print("F3DM: invalid command received")
             self._freedomInterface.send_error()
+        self._freedomInterface.clear_command()
+        return False
 
     """
     Detect then a roman numeral is on the camera
@@ -62,18 +97,20 @@ class MainBitch:
         #   self._freedomInterface.send_stop_signal()
         #    time.sleep(2)
         # TODO: maybe stop to take pictures
-        digit = self._romanDetector.startNumberDetection()
+        digit = random.randint(1,5) # self._romanDetector.startNumberDetection()
         if digit != 0:
-            self._romanDigit =digit
-            self._romanDisplay.printDigit(self._romanDigit)
+            self._romanDigit = digit
+            #self._romanDisplay.printDigit(self._romanDigit)
         #     self._freedomInterface.send_start_signal()
 
     """
     Blocks until the traffic light is green.
     """
     def wait_for_traffic_light(self):
+        return True
         was_red = False
-        with cv2.VideoCapture(self._cameraToUse) as camera:
+        try:
+            camera = cv2.VideoCapture(self._cameraToUse)
             ret, frame = camera.read()
             if frame is None:
                 print("ERROR: no camera picture :(")
@@ -87,3 +124,6 @@ class MainBitch:
 
             was_red = is_red
             time.sleep(0.1)
+        finally:
+            if not camera is None:
+                camera.release()
