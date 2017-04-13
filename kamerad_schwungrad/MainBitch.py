@@ -19,6 +19,7 @@ procedure of the parcours is handled here
 
 class MainBitch:
     def __init__(self):
+        self._was_red = False
         self._trafficLightDetector = TrafficLightDetector()
         self._cameraToUse = 0
         self._freedomInterface = FreedomInterface('/dev/ttyS0')
@@ -30,6 +31,7 @@ class MainBitch:
     Drive the whole Parcours.
     """
     def run_parcour(self):
+        self._was_red = False
         while not self.wait_for_traffic_light():
             pass
 
@@ -125,10 +127,10 @@ class MainBitch:
     Blocks until the traffic light is green.
     """
     def wait_for_traffic_light(self):
-        was_red = False
         try:
             camera = cv2.VideoCapture(self._cameraToUse)
             ret, frame = camera.read()
+            print("next frame")
             if frame is None:
                 print("ERROR: no camera picture :(")
                 return False
@@ -136,10 +138,12 @@ class MainBitch:
             is_red = self._trafficLightDetector.detect_red_traffic_light(frame)
             is_green = self._trafficLightDetector.detect_green_traffic_light(frame)
 
-            if is_green and not is_red and was_red:
+            if is_green and not is_red and self._was_red:
                 return True
 
-            was_red = is_red
+            if is_red:
+                print("was_red set")
+                self._was_red = is_red
             time.sleep(0.1)
         finally:
             if not camera is None:
