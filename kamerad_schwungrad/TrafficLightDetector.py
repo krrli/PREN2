@@ -31,5 +31,5 @@ class TrafficLightDetector:
         show_debug_frame("TrafficLight " + color, res)
         countcolor = cv2.countNonZero(mask)
         # wait_for_input()
-        print(ident, countcolor)
+        print(color + ": ", countcolor)
         return countcolor
