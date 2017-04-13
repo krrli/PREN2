@@ -94,7 +94,7 @@ class RomanDetector2():
 
                     # path = os.path.abspath("C:/Code/PREN2/RomanNumberDetector/numbers/romannumber")
                     path = os.path.join(os.path.dirname(os.path.realpath(__file__)), "numbers")
-                    completePath = path + "/" + str(i) + ".tiff"
+                    completePath = path + "/" + str(i) + ".png"
 
                     if (i == 1):
                         cv2.imwrite(completePath, frame)
@@ -119,7 +119,7 @@ class RomanDetector2():
                 else:
                     return self.crop()
 
-            #cv2.imshow('frame', frame)
+            # cv2.imshow('frame', frame)
 
             key = cv2.waitKey(1) & 0xFF
 
@@ -145,7 +145,7 @@ class RomanDetector2():
         print(imageDir)
 
         image_path_list = []
-        valid_image_extensions = [".tiff"]  # specify your vald extensions here
+        valid_image_extensions = [".png"]  # specify your vald extensions here
         valid_image_extensions = [item.lower() for item in valid_image_extensions]
 
         # create a list all files in directory and

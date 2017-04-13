@@ -93,7 +93,7 @@ class MainBitch:
     Detect then a roman numeral is on the camera
     and stop to take a picture.
     """
-    def handle_roman_numeral_detection(self):
+    def handle_roman_numeral_detection(self, camera):
         # send a stop signal every five seconds for 2 seconds
         # just to test the thing
         # if int(time.time()) % 5 == 0:
@@ -101,22 +101,16 @@ class MainBitch:
         #    time.sleep(2)
         # TODO: maybe stop to take pictures
 
-        try:
-            camera = cv2.VideoCapture(self._cameraToUse)
-            ret, frame = camera.read()
-            if frame is None:
-                print("Error no camera picture :(")
-                return False
+        ret, frame = camera.read()
+        if frame is None:
+            print("Error no camera picture :(")
+            return False
 
-            self._romanDigit = self._romanDetector.startNumberDetection(frame)
+        self._romanDigit = self._romanDetector.startNumberDetection(frame)
 
-            if self._romanDigit != 0:
-                print("detected digit " + str(self._romanDigit))
-                # self._romanDisplay.printDigit(self._romanDigit)
-
-        finally:
-            if not camera is None:
-                camera.release()
+        if self._romanDigit != 0:
+            print("detected digit " + str(self._romanDigit))
+            # self._romanDisplay.printDigit(self._romanDigit)
 
         #digit = random.randint(1,5) # self._romanDetector.startNumberDetection()
         #if digit != 0:

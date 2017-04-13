@@ -1,6 +1,10 @@
 ###ask for number
+import sys
 import cv2
 
+
+sys.path.append(".") # make script callable from project directory
+sys.path.append("..") # make script callable from bin directory
 
 from RomanNumberDetector.RomanDetector2 import RomanDetector2
 
