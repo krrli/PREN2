@@ -3,6 +3,7 @@ from serial.serialutil import SerialException
 from kamerad_schwungrad.FreedomInterface import FreedomInterface
 from kamerad_schwungrad.TrafficLightDetector import TrafficLightDetector
 from RomanNumberDetector.RomanDetector import RomanDetector
+from RomanNumberDetector.RomanDetector2 import RomanDetector2
 from kamerad_schwungrad.RomanDisplay import RomanDisplay
 import random
 import time
@@ -21,7 +22,7 @@ class MainBitch:
         self._trafficLightDetector = TrafficLightDetector()
         self._cameraToUse = 0
         self._freedomInterface = FreedomInterface('/dev/ttyS0')
-        self._romanDetector = RomanDetector(self._cameraToUse)
+        self._romanDetector = RomanDetector2()
         self._romanDisplay = None# RomanDisplay()
         self._romanDigit = 1
 
@@ -97,11 +98,28 @@ class MainBitch:
         #   self._freedomInterface.send_stop_signal()
         #    time.sleep(2)
         # TODO: maybe stop to take pictures
-        digit = random.randint(1,5) # self._romanDetector.startNumberDetection()
-        if digit != 0:
-            self._romanDigit = digit
-            #self._romanDisplay.printDigit(self._romanDigit)
-        #     self._freedomInterface.send_start_signal()
+
+        try:
+            camera = cv2.VideoCapture(self._cameraToUse)
+            ret, frame = camera.read()
+            if frame is None:
+                print("Error no camera picture :(")
+                return False
+
+            self._romanDigit = self._romanDetector.startNumberDetection(frame)
+
+            if self._romanDigit != 0:
+                self._romanDisplay.printDigit(self._romanDigit)
+
+        finally:
+            if not camera is None:
+                camera.release()
+
+        #digit = random.randint(1,5) # self._romanDetector.startNumberDetection()
+        #if digit != 0:
+        #self._romanDigit = digit
+
+        #self._freedomInterface.send_start_signal()
 
     """
     Blocks until the traffic light is green.
