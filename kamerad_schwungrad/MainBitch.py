@@ -24,7 +24,7 @@ class MainBitch:
         self._cameraToUse = 0
         self._freedomInterface = FreedomInterface('/dev/ttyS0')
         self._romanDetector = RomanDetector2()
-        self._romanDisplay = None# RomanDisplay()
+        self._romanDisplay = None # RomanDisplay()
         self._romanDigit = 1
 
     """
@@ -111,7 +111,8 @@ class MainBitch:
             self._romanDigit = self._romanDetector.startNumberDetection(frame)
 
             if self._romanDigit != 0:
-                self._romanDisplay.printDigit(self._romanDigit)
+                print("detected digit " + str(self._romanDigit))
+                # self._romanDisplay.printDigit(self._romanDigit)
 
         finally:
             if not camera is None:
