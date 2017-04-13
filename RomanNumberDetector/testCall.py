@@ -13,6 +13,7 @@ while(True):
     ret, frame = cap.read()
     detectedNumber = test.startNumberDetection(frame)
     cv2.imshow('frame', frame)
+
     key = cv2.waitKey(1) & 0xFF
 
     if key == ord("q"):
