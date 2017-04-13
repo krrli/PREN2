@@ -4,3 +4,5 @@
 /vcs.xml
 /workspace.xml
 *.xml
+deployment.xml
+webServers.xml
