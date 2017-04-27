@@ -58,7 +58,8 @@ class RomanDetector3():
                 # Combine Masks
                 mask = mask0 + mask1
                 red_hue_image = cv2.addWeighted(mask0, 1.0, mask1, 1.0, 0.0)
-                test = cv2.GaussianBlur(red_hue_image, (9, 9), 0)
+                test = red_hue_image
+                #test = cv2.GaussianBlur(red_hue_image, (9, 9), 0)
                 # test = cv2.GaussianBlur(mask, (9,9), 0)
 
                 # Get Contours
@@ -78,7 +79,7 @@ class RomanDetector3():
                         if len(approxCurve) == 4:
                             rect = cv2.boundingRect(approxCurve)
                             # Only save Rectangles with height of 150+
-                            if rect[3] >= 100:
+                            if rect[3] >= 80:
                                 rectangleList.append(rect)
                                 barCount += 1
 
