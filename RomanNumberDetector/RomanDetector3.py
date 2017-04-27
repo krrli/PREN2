@@ -99,6 +99,7 @@ class RomanDetector3():
                     #completePath = path + "/" + str(i) + ".png"
 
                     if (i == 1):
+                        self.detectedRomanBars.clear()
                         self.detectedRomanBars.append(frame)
                         timeout = time.time() + 2
                         timeOutSet = True
