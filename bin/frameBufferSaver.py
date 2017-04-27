@@ -9,16 +9,18 @@ sys.path.append(".") # make script callable from project directory
 sys.path.append("..") # make script callable from bin directory
 
 from kamerad_schwungrad.FrameBuffer import FrameBuffer
+from kamerad_schwungrad.CvCamera import CvCamera
 
 frameBuffer = FrameBuffer()
 
-cap = cv2.VideoCapture(0)
+cap = CvCamera(0)
 
 frameBuffer.set_camera(cap)
 frameBuffer.start_capturing()
 
 time.sleep(20)
 frameBuffer.stop_capturing()
+cap.free_camera()
 
 i = 0
 while True:

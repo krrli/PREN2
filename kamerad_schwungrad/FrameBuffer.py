@@ -16,12 +16,11 @@ class FrameBuffer:
         thread = Thread(args=(), target=self._capture)
         thread.start()
 
-
     def _capture(self):
         while not self._capture_stop_event.is_set():
             frame = None
             with self._camera_lock:
-                ret, frame = self._camera.read()
+                frame = self._camera.capture()
 
             if not frame is None:
                 self.frame_queue.put_nowait(frame)
