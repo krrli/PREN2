@@ -76,7 +76,7 @@ class RomanDetector2():
                         if len(approxCurve) == 4:
                             rect = cv2.boundingRect(approxCurve)
                             # Only save Rectangles with height of 150+
-                            if rect[3] >= 150:
+                            if rect[3] >= 100:
                                 rectangleList.append(rect)
                                 barCount += 1
 
