@@ -1,5 +1,5 @@
 #OpenCV3
-#31.03.17
+#27.04.17
 #main
 
 import os, os.path
@@ -58,9 +58,8 @@ class RomanDetector3():
                 # Combine Masks
                 mask = mask0 + mask1
                 red_hue_image = cv2.addWeighted(mask0, 1.0, mask1, 1.0, 0.0)
-                test = red_hue_image
-                #test = cv2.GaussianBlur(red_hue_image, (9, 9), 0)
-                # test = cv2.GaussianBlur(mask, (9,9), 0)
+                test = cv2.GaussianBlur(red_hue_image, (9, 9), 0)
+                #test = cv2.GaussianBlur(mask, (9,9), 0)
 
                 # Get Contours
                 _, contours, hierarchy = cv2.findContours(test, cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE)
