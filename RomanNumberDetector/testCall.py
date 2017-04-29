@@ -18,8 +18,8 @@ while(True):
     detectedNumber = test.startNumberDetection(frame)
     print(detectedNumber)
 
-    if detectedNumber != None:
-        break
+    #if detectedNumber != None:
+    #    break
 
     #frame = cv2.resize(frame, (400,400))
 

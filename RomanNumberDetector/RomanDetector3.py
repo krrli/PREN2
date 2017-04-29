@@ -61,8 +61,18 @@ class RomanDetector3():
                 test = cv2.GaussianBlur(red_hue_image, (9, 9), 0)
                 #test = cv2.GaussianBlur(mask, (9,9), 0)
 
+                ###
+                kernel = np.ones((5, 5), np.uint8)
+                opening = cv2.morphologyEx(test, cv2.MORPH_OPEN, kernel)
+
+                ret, thresh = cv2.threshold(opening, 0, 255, cv2.THRESH_BINARY + cv2.THRESH_OTSU)
+
+                #cv2.imshow('OTSU', thresh)
+                ###
+
+
                 # Get Contours
-                _, contours, hierarchy = cv2.findContours(test, cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE)
+                _, contours, hierarchy = cv2.findContours(thresh, cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE)
                 barCount = 0
 
                 rectangleList = []
