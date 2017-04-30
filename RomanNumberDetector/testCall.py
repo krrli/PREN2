@@ -6,9 +6,9 @@ import cv2
 sys.path.append(".") # make script callable from project directory
 sys.path.append("..") # make script callable from bin directory
 
-from RomanNumberDetector.RomanDetector3 import RomanDetector3
+from RomanNumberDetector.RomanDetector4 import RomanDetector4
 
-test = RomanDetector3()
+test = RomanDetector4()
 
 cap = cv2.VideoCapture(0)
 
