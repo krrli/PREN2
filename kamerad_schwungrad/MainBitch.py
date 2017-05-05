@@ -5,6 +5,7 @@ from kamerad_schwungrad.TrafficLightDetector import TrafficLightDetector
 from RomanNumberDetector.RomanDetector import RomanDetector
 from RomanNumberDetector.RomanDetector2 import RomanDetector2
 from kamerad_schwungrad.RomanDisplay import RomanDisplay
+from kamerad_schwungrad.FrameBuffer import FrameBuffer
 import random
 import time
 import cv2
@@ -28,6 +29,8 @@ class MainBitch:
         self._romanDetector = RomanDetector2()
         self._romanDisplay = None # RomanDisplay()
         self._romanDigit = 1
+        self._frameBufferKari = None;
+        self._frameBufferBubeluschka = None;
 
     """
     Drive the whole Parcours.
@@ -38,6 +41,17 @@ class MainBitch:
             pass
 
         detectionCameras = [cv2.VideoCapture(self._detectionCameras[0]), cv2.VideoCapture(self._detectionCameras[1])]
+
+        # Kamera: in Fahrtrichtung links!
+        # Bei Kurwa: Immernoch Fahrtrichtung links, aso Kamera switchen.
+        # Parcours links / Parcours rechts
+        self._frameBufferKari = FrameBuffer("kari");
+        self._frameBufferBubeluschka = FrameBuffer("bubeluschka");
+
+        # TODO: framebuffer alo
+        # TODO: Set camera
+        # TODO: QueuedWorker alo
+
         tries = 1
         while tries <= 3:
             try:
@@ -45,6 +59,7 @@ class MainBitch:
                 tries += 1
                 self._freedomInterface.open_port()
                 response = self._freedomInterface.send_start_signal()
+
                 if response is None:
                     print("MAIN: start signal was not acknowledged (nothing received)")
 
@@ -56,6 +71,7 @@ class MainBitch:
                     parcours_finished = False
                     while not parcours_finished:
                         # self.handle_roman_numeral_detection()
+                        # TODO: Queue Worker abfroge, öber scho e nommere hed
                         parcours_finished = self.handle_freedom_interface()
                     break
             except SerialException:
@@ -78,6 +94,8 @@ class MainBitch:
 
         if self._freedomInterface.roman_numeral_requested():
             print("F3DM: roman numeral requested")
+            # TODO: Queueworker - hesch es nömmerli?
+            # TODO: 7segmänt
             while not (self._freedomInterface.send_roman_numeral(self._romanDigit) == True):
                 pass
             return True
@@ -85,6 +103,7 @@ class MainBitch:
         if self._freedomInterface.curve_signaled():
             print("F3DM: curve was signaled")
             self._freedomInterface.send_acknowledge()
+            # TODO: kamera wächsle
 
         if self._freedomInterface.invalid_command_received():
             print("F3DM: invalid command received")
@@ -95,7 +114,7 @@ class MainBitch:
     """
     Detect then a roman numeral is on the camera
     and stop to take a picture.
-    """
+
     def handle_roman_numeral_detection(self, camera):
         # send a stop signal every five seconds for 2 seconds
         # just to test the thing
@@ -104,6 +123,7 @@ class MainBitch:
         #    time.sleep(2)
         # TODO: maybe stop to take pictures
 
+        # Camera.read ersetzen durch FrameBuffer und QueueWorker
         ret, frame = camera.read()
         if frame is None:
             print("Error no camera picture :(")
@@ -120,6 +140,8 @@ class MainBitch:
         #self._romanDigit = digit
 
         #self._freedomInterface.send_start_signal()
+
+    """
 
     """
     Blocks until the traffic light is green.
