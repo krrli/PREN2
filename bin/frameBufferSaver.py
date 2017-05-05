@@ -10,6 +10,7 @@ sys.path.append("..") # make script callable from bin directory
 
 from kamerad_schwungrad.FrameBuffer import FrameBuffer
 from kamerad_schwungrad.CvCamera import CvCamera
+from kamerad_schwungrad.RaspiCamera import RaspiCamera
 
 frameBuffer = FrameBuffer()
 

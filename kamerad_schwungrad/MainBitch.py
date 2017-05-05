@@ -21,7 +21,9 @@ class MainBitch:
     def __init__(self):
         self._was_red = False
         self._trafficLightDetector = TrafficLightDetector()
-        self._cameraToUse = 0
+        self._trafficLightCameraToUse = 0
+        self._detectionCameras = [0, 1]
+        self._detectionCameraToUseIndex = 0
         self._freedomInterface = FreedomInterface('/dev/ttyS0')
         self._romanDetector = RomanDetector2()
         self._romanDisplay = None # RomanDisplay()
@@ -35,6 +37,7 @@ class MainBitch:
         while not self.wait_for_traffic_light():
             pass
 
+        detectionCameras = [cv2.VideoCapture(self._detectionCameras[0]), cv2.VideoCapture(self._detectionCameras[1])]
         tries = 1
         while tries <= 3:
             try:
@@ -123,7 +126,7 @@ class MainBitch:
     """
     def wait_for_traffic_light(self):
         try:
-            camera = cv2.VideoCapture(self._cameraToUse)
+            camera = cv2.VideoCapture(self._detectionCamerasToUse)
             ret, frame = camera.read()
             print("next frame")
             if frame is None:
