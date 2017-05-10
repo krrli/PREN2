@@ -6,7 +6,7 @@ import time
 sys.path.append(".") # make script callable from project directory
 sys.path.append("..") # make script callable from bin directory
 
-from RomanNumberDetector.RomanDetector4 import RomanDetector4
+from RomanNumberDetector.RomanDetector5 import RomanDetector5
 
 from queue import Queue
 from threading import Thread, Lock, Event
@@ -18,7 +18,7 @@ class FrameBuffer:
         self._camera_lock = Lock()
         self._camera = None
         self._capture_stop_event = Event()
-        self.RomanDetector = RomanDetector4()
+        self.RomanDetector = RomanDetector5()
 
     def set_camera(self, camera):
         with self._camera_lock:
@@ -92,8 +92,9 @@ class FrameBuffer:
 
 cap = cv2.VideoCapture(0)
 
-####just to see something
 
+####just to see something
+'''
 while(True):
     # Capture frame-by-frame
     ret, frame = cap.read()
@@ -104,8 +105,7 @@ while(True):
 
     if key == ord("q"):
         break
-####
-
+'''
 
 
 
@@ -114,7 +114,7 @@ frameBuffer = FrameBuffer()
 frameBuffer.set_camera(cap)
 frameBuffer.start_capturing()
 
-time.sleep(2)
+time.sleep(5)
 
 frameBuffer.stop_capturing()
 
