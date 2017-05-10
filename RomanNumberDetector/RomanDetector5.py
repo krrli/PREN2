@@ -53,7 +53,7 @@ class RomanDetector5():
             _, contours, hierarchy = cv2.findContours(test, cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE)
             barCount = 0
 
-            cv2.imshow('test', test)
+            #cv2.imshow('test', test)
 
             # cv2.drawContours(frame, contours, -1, (0, 255, 0), 3)
             rectangleList = []
