@@ -6,7 +6,7 @@ import cv2
 import numpy as np
 from RomanNumberDetector import crop, analyse
 
-class RomanDetector4():
+class RomanDetector5():
 
     frame = None
     cropped = []
@@ -32,6 +32,7 @@ class RomanDetector4():
 
         if not self.hasCharacterBeenEvaluated:
             hsv = cv2.cvtColor(frame, cv2.COLOR_BGR2HSV)
+            # define range of blue color in HSV
 
             # lower mask (0-10)
             lower_red = np.array([0, 100, 10])
@@ -46,45 +47,33 @@ class RomanDetector4():
             # Combine Masks
             mask = mask0 + mask1
             red_hue_image = cv2.addWeighted(mask0, 1.0, mask1, 1.0, 0.0)
-            #test = cv2.GaussianBlur(red_hue_image, (9, 9), 0)
-            #test = cv2.GaussianBlur(mask, (9,9), 0)
-
-            ###
-            kernel = np.ones((5, 5), np.uint8)
-            opening = cv2.morphologyEx(red_hue_image, cv2.MORPH_OPEN, kernel)
-            #ret, thresh = cv2.threshold(opening, 0, 255, cv2.THRESH_BINARY + cv2.THRESH_OTSU)
-            thresh = cv2.adaptiveThreshold(opening, 255, cv2.ADAPTIVE_THRESH_GAUSSIAN_C, cv2.THRESH_BINARY, 45, 0)
-
-            closing = cv2.morphologyEx(thresh, cv2.MORPH_CLOSE, kernel)
-
-            dilation = cv2.dilate(closing, kernel, iterations=2)
-
-
-            cv2.imshow('OTSU', dilation)
-            ###
-
+            test = cv2.GaussianBlur(red_hue_image, (9, 9), 0)
 
             # Get Contours
-            _, contours, hierarchy = cv2.findContours(dilation, cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE)
-            image, contours, hier = cv2.findContours(dilation, cv2.RETR_EXTERNAL,cv2.CHAIN_APPROX_SIMPLE)
+            _, contours, hierarchy = cv2.findContours(test, cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE)
             barCount = 0
 
+            #cv2.imshow('test', test)
+
+            # cv2.drawContours(frame, contours, -1, (0, 255, 0), 3)
             rectangleList = []
 
             # Loop Through Found contours
             for foundRectangle in contours:
                 if barCount <= 2:
 
+                    area = cv2.contourArea(foundRectangle)
+
                     approxDistance = cv2.arcLength(foundRectangle, True) * 0.02
 
                     approxCurve = cv2.approxPolyDP(foundRectangle, approxDistance, True)
 
                     # Only look for rectangles
-                    if len(approxCurve) == 4:
-                        rect = cv2.boundingRect(approxCurve)
-                        # Only save Rectangles with height of 150+
 
-                        if rect[3] >= 100:
+                    if (area > 3000):
+                        rect = cv2.boundingRect(approxCurve)
+                        # Only save Rectangles with height of 250+
+                        if rect[3] >= 150:
                             rectangleList.append(rect)
                             barCount += 1
 
@@ -123,50 +112,31 @@ class RomanDetector4():
 
     '''
     This function analyses all available cropped pictures in cropped array.
-    A counter will be increased by one for every detected number.
-    The number with the highest count will be returned at least 0.
     '''
     def analyse(self):
 
         self.detectedNumber.clear()
 
-        '''
-        return analyse.analyseNumber(self.cropped[0])
+        #return analyse.analyseNumber(self.cropped[0])
 
-        '''
         for abc in self.cropped:
             self.detectedNumber.append(analyse.analyseNumber(abc))
 
         #print(self.detectedNumber)
 
-        count = [0] * 5
-
         for abc in self.detectedNumber:
 
             if (abc == 1):
-                count[0] = count[0] + 1
-            if (abc == 2):
-                count[1] = count[1] + 1
-            if (abc == 3):
-                count[2] = count[2] + 1
-            if (abc == 4):
-                count[3] = count[3] + 1
-            if (abc == 5):
-                count[4] = count[4] + 1
-
-        c = 5
-
-        while (c > 0):
-            if (count[0] == c):
                 return 1
-            if (count[1] == c):
+            if (abc == 2):
                 return 2
-            if (count[2] == c):
+            if (abc == 3):
                 return 3
-            if (count[3] == c):
+            if (abc == 4):
                 return 4
-            if (count[4] == c):
+            if (abc == 5):
                 return 5
-            c = c - 1
 
         return 0
+
+
