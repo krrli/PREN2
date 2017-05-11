@@ -2,10 +2,10 @@ from serial.serialutil import SerialException
 
 from kamerad_schwungrad.FreedomInterface import FreedomInterface
 from kamerad_schwungrad.TrafficLightDetector import TrafficLightDetector
-from RomanNumberDetector.RomanDetector import RomanDetector
-from RomanNumberDetector.RomanDetector2 import RomanDetector2
+from RomanNumberDetector.RomanDetector5 import RomanDetector5
 from kamerad_schwungrad.RomanDisplay import RomanDisplay
 from kamerad_schwungrad.FrameBuffer import FrameBuffer
+from kamerad_schwungrad.QueueWorker import QueueWorker
 import random
 import time
 import cv2
@@ -26,12 +26,12 @@ class MainBitch:
         self._detectionCameras = [0, 1]
         self._detectionCameraToUseIndex = 0
         self._freedomInterface = FreedomInterface('/dev/ttyS0')
-        self._romanDetector = RomanDetector2()
+        self._romanDetector = RomanDetector5()
+        self._queueWorker = QueueWorker(self._romanDetector)
         self._romanDisplay = None # RomanDisplay()
         self._romanDigit = 1
+        self._frameBuffers = []
         print("MAIN: init")
-        self._frameBufferKari = None;
-        self._frameBufferBubeluschka = None;
 
     """
     Drive the whole Parcours.
@@ -43,17 +43,7 @@ class MainBitch:
             pass
 
         print("MAIN: Creating cameras for Roman Numeral Detection")
-        detectionCameras = [cv2.VideoCapture(self._detectionCameras[0]), cv2.VideoCapture(self._detectionCameras[1])]
-
-        # Kamera: in Fahrtrichtung links!
-        # Bei Kurwa: Immernoch Fahrtrichtung links, aso Kamera switchen.
-        # Parcours links / Parcours rechts
-        self._frameBufferKari = FrameBuffer("kari");
-        self._frameBufferBubeluschka = FrameBuffer("bubeluschka");
-
-        # TODO: framebuffer alo
-        # TODO: Set camera
-        # TODO: QueuedWorker alo
+        self.start_roman_numeral_detection()
 
         tries = 1
         while tries <= 3:
@@ -83,6 +73,20 @@ class MainBitch:
                 self._freedomInterface.close_port()
 
 
+    def start_roman_numeral_detection(self):
+        #                   Kamera links                                 Kamera rechts
+        detectionCameras = [cv2.VideoCapture(self._detectionCameras[0]), cv2.VideoCapture(self._detectionCameras[1])]
+
+        self._frameBuffers = []
+
+        for camera in detectionCameras:
+            frame_buffer = FrameBuffer()
+            frame_buffer.set_camera(camera)
+            self._frameBuffers.append(frame_buffer)
+            self._queueWorker.add_frame_buffer(frame_buffer)
+
+        self._queueWorker.start_working()
+
     """
     Handles the communication with the Freedom Board
     """
@@ -97,16 +101,21 @@ class MainBitch:
 
         if self._freedomInterface.roman_numeral_requested():
             print("F3DM: roman numeral requested")
-            # TODO: Queueworker - hesch es nömmerli?
-            # TODO: 7segmänt
-            while not (self._freedomInterface.send_roman_numeral(self._romanDigit) == True):
-                pass
+            while True:
+                if self._queueWorker.number_detected != 0:
+                     # TODO: 7segmänt
+                    while not (self._freedomInterface.send_roman_numeral(self.number_detected) == True):
+                        pass
+                else:
+                    print("MAIN: But no number available yet???")
+                    time.sleep(1)
+
             return True
 
         if self._freedomInterface.curve_signaled():
             print("F3DM: curve was signaled")
             self._freedomInterface.send_acknowledge()
-            # TODO: kamera wächsle
+            # TODO: kamera wächsle (im mom nid nötig .... )
 
         if self._freedomInterface.invalid_command_received():
             print("F3DM: invalid command received")
@@ -151,7 +160,7 @@ class MainBitch:
     """
     def wait_for_traffic_light(self):
         try:
-            camera = cv2.VideoCapture(self._detectionCamerasToUse)
+            camera = cv2.VideoCapture(self._trafficLightCameraToUse)
             ret, frame = camera.read()
             if frame is None:
                 print("ERROR: no camera picture :(")
@@ -167,7 +176,6 @@ class MainBitch:
             if is_red:
                 print("LGHT: red traffic light was seen")
                 self._was_red = is_red
-            time.sleep(0.1)
         finally:
             if not camera is None:
                 camera.release()

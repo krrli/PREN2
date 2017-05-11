@@ -7,10 +7,13 @@ from kamerad_schwungrad.debug import wait_for_input
 
 
 from kamerad_schwungrad.MainBitch import MainBitch
+from schalter_walter.Unbuffered import Unbuffered
 import RPi.GPIO as GPIO
 import time
 
-
+# make stdout unbuffered
+sys.stdout = Unbuffered(sys.stdout)
+sys.stderr = Unbuffered(sys.stderr)
 
 GPIO_PIN = 3
 GPIO_ON = 1
@@ -35,8 +38,9 @@ while True:
     try:
         main_bitch = MainBitch()
         main_bitch.run_parcour()
-    except:
+    except Exception as e:
         print("D3MN: The bitch crashed!")
+        print(e)
 
     print("DEMN: waiting for lever to go to off state ... ")
     waitForLeverToBe(GPIO_OFF)

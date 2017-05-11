@@ -1,7 +1,7 @@
 
 import cv2
 
-ENABLE_DEBUG = True
+ENABLE_DEBUG = False
 
 
 def show_debug_frame(window_title, frame):
