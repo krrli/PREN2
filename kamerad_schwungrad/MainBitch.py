@@ -28,15 +28,18 @@ class MainBitch:
         self._romanDetector = RomanDetector2()
         self._romanDisplay = None # RomanDisplay()
         self._romanDigit = 1
+        print("MAIN: init")
 
     """
     Drive the whole Parcours.
     """
     def run_parcour(self):
+        print("MAIN: parcour was started, waiting for traffic light")
         self._was_red = False
         while not self.wait_for_traffic_light():
             pass
 
+        print("MAIN: Creating cameras for Roman Numeral Detection")
         detectionCameras = [cv2.VideoCapture(self._detectionCameras[0]), cv2.VideoCapture(self._detectionCameras[1])]
         tries = 1
         while tries <= 3:
@@ -128,7 +131,6 @@ class MainBitch:
         try:
             camera = cv2.VideoCapture(self._detectionCamerasToUse)
             ret, frame = camera.read()
-            print("next frame")
             if frame is None:
                 print("ERROR: no camera picture :(")
                 return False
@@ -137,10 +139,11 @@ class MainBitch:
             is_green = self._trafficLightDetector.detect_green_traffic_light(frame)
 
             if is_green and not is_red and self._was_red:
+                print("LGHT: red traffic light was seen")
                 return True
 
             if is_red:
-                print("was_red set")
+                print("LGHT: red traffic light was seen")
                 self._was_red = is_red
             time.sleep(0.1)
         finally:

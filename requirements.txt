@@ -1,1 +1,4 @@
 pyserial
+RPi.GPIO
+opencv-python
+python-daemon

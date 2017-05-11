@@ -1,0 +1,16 @@
+[Unit]
+Description=PREN2 Raspi script for Camera and Traffic Light Detection
+After=syslog.target
+
+[Service]
+Type=simple
+User=root
+Group=root
+WorkingDirectory=/root/PREN2-Raspi
+ExecStart=/root/.virtualenvs/cv3/bin/python3 /root/PREN2-Raspi/schalter_walter/SchalterWalter.py
+EnvironmentFile=/root/PREN2-Raspi/schalter_walter.env
+StandardOutput=syslog
+StandardError=syslog
+
+[Install]
+WantedBy=multi-user.target
