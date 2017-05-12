@@ -2,6 +2,7 @@ from threading import Thread
 from threading import Lock
 from threading import Event
 from queue import Queue
+from queue import Empty
 
 class QueueWorker:
     def __init__(self, romanNumeralDetector):
@@ -16,7 +17,7 @@ class QueueWorker:
             self._frame_buffers.append(queue)
 
     def start_working(self):
-        thread = Thread(args=(), target=self._work_on_queues())
+        thread = Thread(args=(), target=self._work_on_queues)
         thread.start()
 
     def _work_on_queues(self):
@@ -28,7 +29,7 @@ class QueueWorker:
                         number_result = self._romanNumeralDetector.capture(frame)
                         if number_result != 0:
                             self.numberDetected = number_result
-                    except Queue.Empty:
+                    except Empty:
                         pass
 
     def stop_capturing(self):
