@@ -32,10 +32,11 @@ class FreedomInterface:
     def open_port(self):
         self._serial = serial.Serial(self._serial_port_device, 9600,
                                      bytesize=serial.EIGHTBITS,
-                                     parity=serial.PARITY_EVEN,
+                                     parity=serial.PARITY_NONE,
                                      stopbits=serial.STOPBITS_ONE,
                                      timeout=0)
         self._serial.nonblocking()
+        self._serial.read_all()
 
     def close_port(self):
         self._serial.close()
