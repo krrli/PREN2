@@ -114,7 +114,7 @@ frameBuffer = FrameBuffer()
 frameBuffer.set_camera(cap)
 frameBuffer.start_capturing()
 
-time.sleep(5)
+time.sleep(14)
 
 frameBuffer.stop_capturing()
 

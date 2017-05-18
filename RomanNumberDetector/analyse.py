@@ -7,14 +7,14 @@ def countConnectedComponents(img):
 
     #gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
     # Threshold it so it becomes binary
-    ret, thresh = cv2.threshold(img,0,255,cv2.THRESH_BINARY+cv2.THRESH_OTSU)
+    #ret, thresh = cv2.threshold(img,0,255,cv2.THRESH_BINARY+cv2.THRESH_OTSU)
 
     #cv2.imshow('test', thresh)
 
     # You need to choose 4 or 8 for connectivity type
     connectivity = 8
     # Perform the operation
-    output = cv2.connectedComponentsWithStats(thresh, connectivity, cv2.CV_32S)
+    output = cv2.connectedComponentsWithStats(img, connectivity, cv2.CV_32S)
     # Get the results
     # The first cell is the number of labels
     num_labels = output[0]
@@ -56,16 +56,14 @@ def analyseNumber(image):
         #cv2.imshow('test3', crop_Array[2])
         #cv2.imshow('test4', crop_Array[3])
 
-
         print(countedComponents)
 
-
-        if (countedComponents[1] == 3 and countedComponents[2] == 3):
-            #print(3)
-            return 3
-        elif (countedComponents[1] == 3 and countedComponents[3] == 2):
+        if (countedComponents[1] == 3 and countedComponents[3] == 2):
             # print(4)
             return 4
+        elif (countedComponents[1] == 3 and countedComponents[2] == 3):
+            #print(3)
+            return 3
         elif (countedComponents[1] == 2 and countedComponents[2] == 1):
             #print(5)
             return 5
