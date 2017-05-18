@@ -22,13 +22,14 @@ class MainBitch:
     def __init__(self):
         self._was_red = False
         self._trafficLightDetector = TrafficLightDetector()
-        self._trafficLightCameraToUse = 0
+        self._trafficLightCameraToUse = 1
+        # Kamera indexes für OpenCV [links, rechts]
         self._detectionCameras = [0, 1]
         self._detectionCameraToUseIndex = 0
         self._freedomInterface = FreedomInterface('/dev/ttyS0')
         self._romanDetector = RomanDetector5()
         self._queueWorker = QueueWorker(self._romanDetector)
-        self._romanDisplay = None # RomanDisplay()
+        self._romanDisplay = RomanDisplay()
         self._romanDigit = 1
         self._frameBuffers = []
         print("MAIN: init")
@@ -39,8 +40,8 @@ class MainBitch:
     def run_parcour(self):
         print("MAIN: parcour was started, waiting for traffic light")
         self._was_red = False
-        while not self.wait_for_traffic_light():
-            pass
+        # while not self.wait_for_traffic_light():
+        #    pass
 
         print("MAIN: Creating cameras for Roman Numeral Detection")
         self.start_roman_numeral_detection()
@@ -80,11 +81,13 @@ class MainBitch:
         self._frameBuffers = []
 
         for camera in detectionCameras:
+            print("MAIN: creating framebuffer")
             frame_buffer = FrameBuffer()
             frame_buffer.set_camera(camera)
             self._frameBuffers.append(frame_buffer)
             self._queueWorker.add_frame_buffer(frame_buffer)
 
+        print("MAIN: starting queue worker")
         self._queueWorker.start_working()
 
     """
@@ -93,7 +96,8 @@ class MainBitch:
     def handle_freedom_interface(self):
         try:
             self._freedomInterface.check_command_received()
-        except (SerialException, OSError):
+        except (SerialException, OSError) as ex:
+            print(ex)
             print("F3DM: Error reading serial port")
             print("F3DM: trying to reopen serial port")
             self._freedomInterface.close_port()
@@ -101,15 +105,6 @@ class MainBitch:
 
         if self._freedomInterface.roman_numeral_requested():
             print("F3DM: roman numeral requested")
-            while True:
-                if self._queueWorker.number_detected != 0:
-                     # TODO: 7segmänt
-                    while not (self._freedomInterface.send_roman_numeral(self.number_detected) == True):
-                        pass
-                else:
-                    print("MAIN: But no number available yet???")
-                    time.sleep(1)
-
             return True
 
         if self._freedomInterface.curve_signaled():
@@ -122,6 +117,20 @@ class MainBitch:
             self._freedomInterface.send_error()
         self._freedomInterface.clear_command()
         return False
+
+    def send_back_roman_digit(self):
+        print("MAIN: stopping frame buffers")
+        for frameBuffer in self._frameBuffers:
+            frameBuffer.stop_capturing()
+
+        print("MAIN: waiting for queue worker to finish")
+        while self._queueWorker.idle:
+            time.sleep(0.1)
+            print("MAIN: displaying digit " + self._queueWorker.numberDetected)
+            self._romanDisplay.display_number(self._queueWorker.numberDetected)
+            while not (self._freedomInterface.send_roman_numeral(self.number_detected) == True):
+                pass
+
 
     """
     Detect then a roman numeral is on the camera
