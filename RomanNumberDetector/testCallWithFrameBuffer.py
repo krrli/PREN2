@@ -1,4 +1,5 @@
 ###ask for number
+import os
 import sys
 import cv2
 import time
@@ -53,6 +54,15 @@ class FrameBuffer:
 
         while not self.frame_queue.empty() :
             analysed = self.RomanDetector.startNumberDetection(self.frame_queue.get_nowait())
+
+            '''
+            i = time.clock()
+            ##test
+            path = os.path.join(os.path.dirname(os.path.realpath(__file__)), "numbers")
+            completePath = path + "/" + str(i) + ".tiff"
+            # store in folder
+            cv2.imwrite(completePath, self.frame_queue.get_nowait())
+            '''
 
             if analysed != None:
                 detected.append(analysed)
