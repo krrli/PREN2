@@ -12,12 +12,13 @@ class TrafficLightDetector:
         return frame[:, 0:cut_width]
 
     def detect_red_traffic_light(self, frame):
-        return self.count_color("red", self.cut_frame(frame), [150, 100, 200], [200, 255, 255]) > 100
+        return self.count_color("red", frame, [150, 100, 200], [200, 255, 255]) > 100
 
     def detect_green_traffic_light(self, frame):
-        return self.count_color("green", self.cut_frame(frame), [35, 150, 145], [78, 255, 255]) > 100
+        return self.count_color("green", frame, [35, 150, 145], [78, 255, 255]) > 100
 
     def count_color(self, color, frame, lower, upper):
+        cv2.imwrite(img=frame, filename=(color + "-orig.png"))
         show_debug_frame('TrafficLight orig', frame)
         hsv = cv2.cvtColor(frame, cv2.COLOR_BGR2HSV)
 
@@ -27,6 +28,8 @@ class TrafficLightDetector:
         # find the colors within the specified boundaries and apply the mask
         mask = cv2.inRange(hsv, lower, upper)
         res = cv2.bitwise_and(frame, frame, mask=mask)
+
+
 
         show_debug_frame("TrafficLight " + color, res)
         countcolor = cv2.countNonZero(mask)
