@@ -1,10 +1,15 @@
 #OpenCV3
-#30.04.17
+#21.05.17
 #main
 
 import cv2
 import numpy as np
 from RomanNumberDetector import crop, analyse
+
+import sys
+
+sys.path.append(".") # make script callable from project directory
+sys.path.append("..") # make script callable from bin directory
 
 class RomanDetector5():
 
@@ -47,13 +52,23 @@ class RomanDetector5():
             # Combine Masks
             mask = mask0 + mask1
             red_hue_image = cv2.addWeighted(mask0, 1.0, mask1, 1.0, 0.0)
-            test = cv2.GaussianBlur(red_hue_image, (9, 9), 0)
+
+            kernel = np.ones((5, 5), np.uint8)
+            opening = cv2.morphologyEx(red_hue_image, cv2.MORPH_OPEN, kernel, iterations = 1)
+            closing = cv2.morphologyEx(opening, cv2.MORPH_CLOSE, kernel, iterations = 5)
+
+            blur = cv2.GaussianBlur(closing, (5, 5), 0)
+            ret, thresh = cv2.threshold(blur, 0, 255, cv2.THRESH_BINARY + cv2.THRESH_OTSU)
+
+            edges = cv2.Canny(blur, ret / 2, ret)
+            edges = cv2.dilate(edges, kernel, iterations=3)
+            edges = cv2.morphologyEx(edges, cv2.MORPH_CLOSE, kernel, iterations=5)
 
             # Get Contours
-            _, contours, hierarchy = cv2.findContours(test, cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE)
+            _, contours, hierarchy = cv2.findContours(edges, cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE)
             barCount = 0
 
-            #cv2.imshow('test', test)
+            #cv2.imshow('test', edges)
 
             # cv2.drawContours(frame, contours, -1, (0, 255, 0), 3)
             rectangleList = []
@@ -64,16 +79,19 @@ class RomanDetector5():
 
                     area = cv2.contourArea(foundRectangle)
 
-                    approxDistance = cv2.arcLength(foundRectangle, True) * 0.02
+                    # calculate center and radius of minimum enclosing circle
+                    (x, y), radius = cv2.minEnclosingCircle(foundRectangle)
 
+                    approxDistance = cv2.arcLength(foundRectangle, True) * 0.02
                     approxCurve = cv2.approxPolyDP(foundRectangle, approxDistance, True)
 
+                    #TODO: check Values
                     # Only look for rectangles
-
-                    if (area > 3000):
+                    if (area > 1000):
                         rect = cv2.boundingRect(approxCurve)
-                        # Only save Rectangles with height of 250+
-                        if rect[3] >= 150:
+                        # Only save Rectangles with height of 100+ or radius of 50+
+                        if radius >= 100 or rect[3] >= 200:
+                        #if rect[3] >= 200:
                             rectangleList.append(rect)
                             barCount += 1
 
