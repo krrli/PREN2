@@ -88,17 +88,15 @@ class FrameBuffer:
                 print("Number:" + "2")
                 NumberHasBeenFound = True
                 break
-            elif detected.count(1) >= i:
-                print("Number:" + "1")
-                NumberHasBeenFound = True
-                break
             else:
                 i = i -1
 
+        if detected.count(1) >= 1 and NumberHasBeenFound == False:
+            print("Number:" + "1")
+            NumberHasBeenFound = True
+
         if not NumberHasBeenFound:
             print("Random Number :(")
-
-
 
 cap = cv2.VideoCapture(0)
 

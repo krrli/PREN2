@@ -62,7 +62,7 @@ class RomanDetector5():
 
             edges = cv2.Canny(blur, ret / 2, ret)
             edges = cv2.dilate(edges, kernel, iterations=3)
-            edges = cv2.morphologyEx(edges, cv2.MORPH_CLOSE, kernel, iterations=5)
+            edges = cv2.morphologyEx(edges, cv2.MORPH_CLOSE, kernel, iterations=10)
 
             # Get Contours
             _, contours, hierarchy = cv2.findContours(edges, cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE)
@@ -89,7 +89,7 @@ class RomanDetector5():
                     # Only look for rectangles
                     if (area > 1000):
                         rect = cv2.boundingRect(approxCurve)
-                        # Only save Rectangles with height of 100+ or radius of 50+
+                        # Only save Rectangles with height of 200+ or radius of 100+
                         if radius >= 100 or rect[3] >= 200:
                         #if rect[3] >= 200:
                             rectangleList.append(rect)
