@@ -32,12 +32,13 @@ class QueueWorker:
                         frame = frame_buffer.frame_queue.get_nowait()
                         number_result = self._romanNumeralDetector.capture(frame)
                         if number_result != 0:
+                            print("QUEE: Numer detected " + str(number_result))
                             self.numberDetected = number_result
                         did_work = True
                     except Empty:
                         pass
 
-                self._idle = not did_work
+                self.idle = not did_work
 
     def stop_capturing(self):
         self._stop_working_event.set()

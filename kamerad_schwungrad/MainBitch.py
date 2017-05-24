@@ -131,13 +131,21 @@ class MainBitch:
         for frameBuffer in self._frameBuffers:
             frameBuffer.stop_capturing()
 
+        self._queueWorker.stop_capturing()
+
         print("MAIN: waiting for queue worker to finish")
-        while self._queueWorker.idle:
+        while not self._queueWorker.idle:
+            print("MAIN: still waiting ... ")
             time.sleep(0.1)
-            print("MAIN: displaying digit " + self._queueWorker.numberDetected)
-            self._romanDisplay.display_number(self._queueWorker.numberDetected)
-            while not (self._freedomInterface.send_roman_numeral(self.number_detected) == True):
-                pass
+
+        digit = self._queueWorker.number_detected
+        print("MAIN: displaying digit " + str(digit))
+        if digit == 0:
+            digit = random.randint(1, 5)
+            print("MAIN: RANDOM DIGIT?!?!?!? ! " + str(digit))
+
+        self._romanDisplay.display_number(digit)
+        self._freedomInterface.send_roman_numeral(digit)
 
 
     """
