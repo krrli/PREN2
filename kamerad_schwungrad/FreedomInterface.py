@@ -1,6 +1,7 @@
 import serial
 import binascii
 
+from cv2 import distanceTransform
 
 """
 Methods for interacting with the Freedom Board
@@ -30,7 +31,10 @@ class FreedomInterface:
         self.last_async_command = None
 
     def open_port(self):
-        self._serial = serial.Serial(self._serial_port_device, 9600,
+        self._serial = serial.Serial(self._serial_port_device, baudrate=9600,
+                                     dsrdtr=False,
+                                     rtscts=False,
+                                     xonxoff=False,
                                      bytesize=serial.EIGHTBITS,
                                      parity=serial.PARITY_NONE,
                                      stopbits=serial.STOPBITS_ONE,
@@ -98,8 +102,9 @@ class FreedomInterface:
     """
     def send_start_signal(self):
         self._serial.write(FreedomInterface.START)
-        self._serial.flush()
-        return self._get_acknowledge()
+        # self._serial.flush()
+        return True
+        # return self._get_acknowledge()
 
     """
      Send a stop signal to the Freedom Board.
@@ -138,7 +143,7 @@ class FreedomInterface:
     """
     def check_command_received(self):
         self.last_async_command = None
-        if self._serial.in_waiting > 0:
+        if self._serial.inWaiting() > 0:
             self.last_async_command = self._serial.read()
             print("F3DM: async command received", binascii.hexlify(self.last_async_command ), self.last_async_command)
 
@@ -165,7 +170,20 @@ class FreedomInterface:
     Check if the Freedom Board has sent an invalid command.
     """
     def invalid_command_received(self):
-        return (not self.no_command_received()) and (not self.curve_signaled()) and (not self.roman_numeral_requested())
+        return (not self.no_command_received()) and (not self.curve_signaled()) and (not self.roman_numeral_requested()) and (not self.error_received()) and (not self.error_received())
+
+    """
+        Call only after check_command_received has been called.
+        Check if the Freedom Board has sent an invalid command.
+        """
+
+    def acknowledge_received(self):
+        return self.last_async_command == FreedomInterface.ACKNOWLEDGE
+
+
+
+    def error_received(self):
+        return self.last_async_command == FreedomInterface.ACKNOWLEDGE
 
     """
     Call only after check_command_received has been called.

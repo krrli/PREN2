@@ -26,7 +26,7 @@ class MainBitch:
         # Kamera indexes für OpenCV [links, rechts]
         self._detectionCameras = [0, 1]
         self._detectionCameraToUseIndex = 0
-        self._freedomInterface = FreedomInterface('/dev/ttyS0')
+        self._freedomInterface = FreedomInterface('/dev/ttyAMA0')
         self._romanDetector = RomanDetector5()
         self._queueWorker = QueueWorker(self._romanDetector)
         self._romanDisplay = RomanDisplay()
@@ -103,8 +103,16 @@ class MainBitch:
             self._freedomInterface.close_port()
             self._freedomInterface.open_port()
 
+        if self._freedomInterface.acknowledge_received():
+            pass
+
+        if self._freedomInterface.error_received():
+            self._freedomInterface.close_port()
+            self._freedomInterface.open_port()
+
         if self._freedomInterface.roman_numeral_requested():
             print("F3DM: roman numeral requested")
+            self.send_back_roman_digit()
             return True
 
         if self._freedomInterface.curve_signaled():
