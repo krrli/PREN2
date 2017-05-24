@@ -24,10 +24,13 @@ class RomanDisplay:
     Print Digit.
     param segment: segment 1 - 5, includes all pins to set to GPIO.HIGH (= azönde)
     """
-    def printDigit(self, segment, number):
+    def printDigit(self, segments, number):
         print("print number: ", number)
 
-        for segment in segment:
+        for segment in self.allSegments:
+            GPIO.output(segment, GPIO.LOW)
+
+        for segment in segments:
             GPIO.output(segment, GPIO.HIGH)
 
     """
@@ -61,11 +64,11 @@ class RomanDisplay:
 
         print("-------- you called __init__ --------")
         self.allSegments = (7, 11, 13, 15, 29, 31, 33)
-        self.segments1 = (15, 33)
-        self.segments2 = (13, 15, 7, 29, 31)
-        self.segments3 = (13, 15, 7, 33, 31)
-        self.segments4 = (11, 7, 15, 33)
-        self.segments5 = (13, 11, 7, 33, 31)
+        self.segments1 = (31, 33)
+        self.segments2 = (7, 11, 15, 29, 33)
+        self.segments3 = (7, 15, 29, 31, 33)
+        self.segments4 = (7, 13, 31, 33)
+        self.segments5 = (7, 13, 15, 29, 31)
 
         # setMode of board
         GPIO.setmode(GPIO.BOARD)
