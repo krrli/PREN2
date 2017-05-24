@@ -22,14 +22,15 @@ class MainBitch:
     def __init__(self):
         self._was_red = False
         self._trafficLightDetector = TrafficLightDetector()
-        self._trafficLightCameraToUse = 1
-        # Kamera indexes für OpenCV [links, rechts]
+        self._trafficLightCameraToUse = 0
+        # Kamera indexes für OpenCV [rechts, links]
         self._detectionCameras = [0, 1]
         self._detectionCameraToUseIndex = 0
         self._freedomInterface = FreedomInterface('/dev/ttyAMA0')
         self._romanDetector = RomanDetector5()
         self._queueWorker = QueueWorker(self._romanDetector)
         self._romanDisplay = RomanDisplay()
+        self._romanDisplay.resetAllSegments()
         self._romanDigit = 1
         self._frameBuffers = []
         print("MAIN: init")
@@ -40,11 +41,14 @@ class MainBitch:
     def run_parcour(self):
         print("MAIN: parcour was started, waiting for traffic light")
         self._was_red = False
-        # while not self.wait_for_traffic_light():
-        #    pass
+        try:
+            camera = cv2.VideoCapture(self._trafficLightCameraToUse)
+            while not self.wait_for_traffic_light(camera):
+               pass
+        finally:
+            if not camera is None:
+                camera.release()
 
-        print("MAIN: Creating cameras for Roman Numeral Detection")
-        self.start_roman_numeral_detection()
 
         tries = 1
         while tries <= 3:
@@ -61,6 +65,8 @@ class MainBitch:
                     print("MAIN: ERROR after start signal")
 
                 if response:
+                    print("MAIN: Creating cameras for Roman Numeral Detection")
+                    self.start_roman_numeral_detection()
                     print("MAIN: started")
                     parcours_finished = False
                     while not parcours_finished:
@@ -84,6 +90,7 @@ class MainBitch:
             print("MAIN: creating framebuffer")
             frame_buffer = FrameBuffer()
             frame_buffer.set_camera(camera)
+            frame_buffer.start_capturing()
             self._frameBuffers.append(frame_buffer)
             self._queueWorker.add_frame_buffer(frame_buffer)
 
@@ -131,7 +138,6 @@ class MainBitch:
         for frameBuffer in self._frameBuffers:
             frameBuffer.stop_capturing()
 
-        self._queueWorker.stop_capturing()
 
         print("MAIN: waiting for queue worker to finish")
         while not self._queueWorker.idle:
@@ -144,6 +150,7 @@ class MainBitch:
             digit = random.randint(1, 5)
             print("MAIN: RANDOM DIGIT?!?!?!? ! " + str(digit))
 
+        self._queueWorker.stop_capturing()
         self._romanDisplay.display_number(digit)
         self._freedomInterface.send_roman_numeral(digit)
 
@@ -183,24 +190,19 @@ class MainBitch:
     """
     Blocks until the traffic light is green.
     """
-    def wait_for_traffic_light(self):
-        try:
-            camera = cv2.VideoCapture(self._trafficLightCameraToUse)
-            ret, frame = camera.read()
-            if frame is None:
-                print("ERROR: no camera picture :(")
-                return False
+    def wait_for_traffic_light(self, camera):
+        ret, frame = camera.read()
+        if frame is None:
+            print("ERROR: no camera picture :(")
+            return False
 
-            is_red = self._trafficLightDetector.detect_red_traffic_light(frame)
-            is_green = self._trafficLightDetector.detect_green_traffic_light(frame)
+        is_red = self._trafficLightDetector.detect_red_traffic_light(frame)
+        is_green = self._trafficLightDetector.detect_green_traffic_light(frame)
 
-            if is_green and not is_red and self._was_red:
-                print("LGHT: red traffic light was seen")
-                return True
+        if is_green and not is_red and self._was_red:
+            print("LGHT: red traffic light was seen")
+            return True
 
-            if is_red:
-                print("LGHT: red traffic light was seen")
-                self._was_red = is_red
-        finally:
-            if not camera is None:
-                camera.release()
+        if is_red:
+            print("LGHT: red traffic light was seen")
+            self._was_red = is_red

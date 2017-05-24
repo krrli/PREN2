@@ -18,7 +18,7 @@ class TrafficLightDetector:
         return self.count_color("green", frame, [35, 150, 145], [78, 255, 255]) > 100
 
     def count_color(self, color, frame, lower, upper):
-        cv2.imwrite(img=frame, filename=(color + "-orig.png"))
+        # cv2.imwrite(img=frame, filename=(color + "-orig.png"))
         show_debug_frame('TrafficLight orig', frame)
         hsv = cv2.cvtColor(frame, cv2.COLOR_BGR2HSV)
 

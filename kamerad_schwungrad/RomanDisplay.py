@@ -26,9 +26,7 @@ class RomanDisplay:
     """
     def printDigit(self, segments, number):
         print("print number: ", number)
-
-        for segment in self.allSegments:
-            GPIO.output(segment, GPIO.LOW)
+        self.resetAllSegments()
 
         for segment in segments:
             GPIO.output(segment, GPIO.HIGH)
