@@ -8,6 +8,7 @@ class FrameBuffer:
         self._camera_lock = Lock()
         self._camera = None
         self._capture_stop_event = Event()
+        self._running = False
 
 
     def set_camera(self, camera):
@@ -16,15 +17,18 @@ class FrameBuffer:
 
 
     def start_capturing(self):
-        thread = Thread(args=(), target=self._capture)
-        thread.start()
+        if not self._running:
+            self._running = True
+            thread = Thread(args=(), target=self._capture)
+            thread.start()
 
     def _capture(self):
         print("FBUF: starting")
         while not self._capture_stop_event.is_set():
             frame = None
             with self._camera_lock:
-                ret, frame = self._camera.read()
+                if not self._camera is None:
+                    ret, frame = self._camera.read()
 
             if not frame is None:
                 print("FBUF: got frame")
@@ -32,5 +36,6 @@ class FrameBuffer:
         print("FBUF: stopping")
 
     def stop_capturing(self):
-        self._capture_stop_event.set()
+        if self._running:
+            self._capture_stop_event.set()
 

@@ -16,8 +16,6 @@ sys.stdout = Unbuffered(sys.stdout)
 sys.stderr = Unbuffered(sys.stderr)
 
 GPIO_PIN = 3
-GPIO_ON = 1
-GPIO_OFF = 0 if GPIO_ON == 1 else 1
 
 
 def waitForLeverToBe(expectedState):
@@ -29,10 +27,12 @@ print("DEMN: setting up GPIO pin for start lever")
 GPIO.setmode(GPIO.BOARD)
 GPIO.setup(GPIO_PIN, GPIO.IN)
 
+waitForLeverToBe(GPIO.LOW)
+
 # with daemon_context:
 while True:
     print("DEMN: waiting for start lever ... ")
-    waitForLeverToBe(GPIO_ON)
+    waitForLeverToBe(GPIO.HIGH)
 
     print("DEMN: start lever detected")
     try:
@@ -43,4 +43,4 @@ while True:
         print(e)
 
     print("DEMN: waiting for lever to go to off state ... ")
-    waitForLeverToBe(GPIO_OFF)
+    waitForLeverToBe(GPIO.LOW)

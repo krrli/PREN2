@@ -22,9 +22,9 @@ class MainBitch:
     def __init__(self):
         self._was_red = False
         self._trafficLightDetector = TrafficLightDetector()
-        self._trafficLightCameraToUse = 0
+        self._trafficLightCameraToUse = 1
         # Kamera indexes für OpenCV [rechts, links]
-        self._detectionCameras = [0, 1]
+        self._detectionCameras = [1, 0]
         self._detectionCameraToUseIndex = 0
         self._freedomInterface = FreedomInterface('/dev/ttyAMA0')
         self._romanDetector = RomanDetector5()
@@ -81,18 +81,15 @@ class MainBitch:
 
 
     def start_roman_numeral_detection(self):
-        #                   Kamera links                                 Kamera rechts
-        detectionCameras = [cv2.VideoCapture(self._detectionCameras[0]), cv2.VideoCapture(self._detectionCameras[1])]
-
         self._frameBuffers = []
 
-        for camera in detectionCameras:
+        for camera in self._detectionCameras:
             print("MAIN: creating framebuffer")
             frame_buffer = FrameBuffer()
-            frame_buffer.set_camera(camera)
-            frame_buffer.start_capturing()
             self._frameBuffers.append(frame_buffer)
             self._queueWorker.add_frame_buffer(frame_buffer)
+
+        self.set_camera_for_framebuffer()
 
         print("MAIN: starting queue worker")
         self._queueWorker.start_working()
@@ -125,7 +122,7 @@ class MainBitch:
         if self._freedomInterface.curve_signaled():
             print("F3DM: curve was signaled")
             self._freedomInterface.send_acknowledge()
-            # TODO: kamera wächsle (im mom nid nötig .... )
+            self.switch_camera()
 
         if self._freedomInterface.invalid_command_received():
             print("F3DM: invalid command received")
@@ -156,38 +153,6 @@ class MainBitch:
 
 
     """
-    Detect then a roman numeral is on the camera
-    and stop to take a picture.
-
-    def handle_roman_numeral_detection(self, camera):
-        # send a stop signal every five seconds for 2 seconds
-        # just to test the thing
-        # if int(time.time()) % 5 == 0:
-        #   self._freedomInterface.send_stop_signal()
-        #    time.sleep(2)
-        # TODO: maybe stop to take pictures
-
-        # Camera.read ersetzen durch FrameBuffer und QueueWorker
-        ret, frame = camera.read()
-        if frame is None:
-            print("Error no camera picture :(")
-            return False
-
-        self._romanDigit = self._romanDetector.startNumberDetection(frame)
-
-        if self._romanDigit != 0:
-            print("detected digit " + str(self._romanDigit))
-            # self._romanDisplay.printDigit(self._romanDigit)
-
-        #digit = random.randint(1,5) # self._romanDetector.startNumberDetection()
-        #if digit != 0:
-        #self._romanDigit = digit
-
-        #self._freedomInterface.send_start_signal()
-
-    """
-
-    """
     Blocks until the traffic light is green.
     """
     def wait_for_traffic_light(self, camera):
@@ -206,3 +171,20 @@ class MainBitch:
         if is_red:
             print("LGHT: red traffic light was seen")
             self._was_red = is_red
+
+    def switch_camera(self):
+        print("MAIN: switching camera")
+        self._detectionCameraToUseIndex = self._detectionCameraToUseIndex  + 1
+        self._detectionCameraToUseIndex = self._detectionCameraToUseIndex % len(self._detectionCameras)
+        self.set_camera_for_framebuffer()
+
+    def set_camera_for_framebuffer(self):
+        camera = self._detectionCameras[self._detectionCameraToUseIndex]
+        for idx, frame_buffer in enumerate(self._frameBuffers):
+            if idx == self._detectionCameraToUseIndex:
+                frame_buffer.set_camera(cv2.VideoCapture(camera))
+                frame_buffer.start_capturing()
+            else:
+                frame_buffer.stop_capturing()
+                frame_buffer.set_camera(None)
+
