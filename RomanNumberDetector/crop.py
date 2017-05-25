@@ -233,11 +233,18 @@ class ShapeDetecter():
 
             warped = four_point_transform(self.frame, pts)
 
-            ret, thresh = cv2.threshold(warped, 127, 255, cv2.THRESH_BINARY_INV + cv2.THRESH_OTSU)
+            blur = cv2.GaussianBlur(warped, (5, 5), 0)
+            ret, thresh = cv2.threshold(blur, 127, 255, cv2.THRESH_BINARY_INV + cv2.THRESH_OTSU)
 
-            #cv2.imshow("closing", thresh)
+            height, width = thresh.shape
 
-            height, width = warped.shape
+            #thresh = cv2.resize(thresh, (2 * width, 2 * height), interpolation=cv2.INTER_CUBIC)
+
+            thresh = thresh[10:height-10, 10:width-10]
+
+            height, width = thresh.shape
+
+            #cv2.imshow("thresh", thresh)
 
             im2, contours, hierarchy = cv2.findContours(thresh, cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE)
 
@@ -250,7 +257,7 @@ class ShapeDetecter():
                 box = cv2.boxPoints(rect)
                 box = np.int0(box)
 
-                (x, y), radius = cv2.minEnclosingCircle(c)
+                #(x, y), radius = cv2.minEnclosingCircle(c)
 
                 c = max(contours, key=cv2.contourArea)
 
@@ -258,8 +265,8 @@ class ShapeDetecter():
                     yStart = np.amin(c, axis=0)[0][1]
                     yEnd = np.amax(c, axis=0)[0][1]
 
-                    xStart = np.amin(c, axis=0)[0][0]
-                    xEnd = np.amax(c, axis=0)[0][0]
+                    #xStart = np.amin(c, axis=0)[0][0]
+                    #xEnd = np.amax(c, axis=0)[0][0]
                 except:
                     yStart = 0
                     yEnd = 0
@@ -267,22 +274,18 @@ class ShapeDetecter():
                     xEnd = 0
 
             try:
-                pts1 = np.float32([[xStart+5, yStart], [xEnd-5, yStart], [xStart+5, yEnd], [xEnd-5, yEnd]])
-                pts2 = np.float32([[0, 0], [600, 0], [0, 600], [600, 600]])
+                pts1 = np.float32([[40, yStart], [width-40, yStart], [40, yEnd], [width-40, yEnd]])
+                pts2 = np.float32([[0, 0], [width*2, 0], [0, 400], [width*2, 400]])
                 M = cv2.getPerspectiveTransform(pts1, pts2)
-                warped = cv2.warpPerspective(warped, M, (600, 600))
+                warped = cv2.warpPerspective(thresh, M, (width*2, 400))
 
             except:
                 warped = warped
 
-            blur = cv2.GaussianBlur(warped, (5, 5), 0)
-            #blur = warped
-            ret, thresh = cv2.threshold(blur, 127, 255, cv2.THRESH_BINARY_INV+cv2.THRESH_OTSU)
-
             kernel = np.ones((5, 5), np.uint8)
-            opening = cv2.morphologyEx(thresh, cv2.MORPH_OPEN, kernel, iterations = 1)
+            opening = cv2.morphologyEx(warped, cv2.MORPH_OPEN, kernel, iterations = 1)
             closing = cv2.morphologyEx(opening, cv2.MORPH_CLOSE, kernel, iterations = 1)
-            erosion = cv2.erode(closing, kernel, iterations=5)
+            #erosion = cv2.erode(closing, kernel, iterations=1)
 
             i = time.clock()
             ##test
@@ -290,11 +293,11 @@ class ShapeDetecter():
             completePath = path + "/" + str(i) + ".tiff"
 
             #store in folder
-            cv2.imwrite(completePath, erosion)
+            #cv2.imwrite(completePath, closing)
 
-            #cv2.imshow("closing", erosion)
+            #cv2.imshow("closing", closing)
 
-            return erosion
+            return closing
 
 
 
