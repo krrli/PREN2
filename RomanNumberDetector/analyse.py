@@ -4,7 +4,6 @@ import cv2
 from RomanNumberDetector import roi_number
 
 def countConnectedComponents(img):
-
     # You need to choose 4 or 8 for connectivity type
     connectivity = 8
     # Perform the operation

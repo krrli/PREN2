@@ -152,7 +152,7 @@ class ShapeDetecter():
 
         self.frame = thresh
 
-        #cv2.imshow("closing", thresh)
+        cv2.imshow("closing", thresh)
 
         kernel = np.ones((5, 5), np.uint8)
 

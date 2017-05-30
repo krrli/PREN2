@@ -47,6 +47,11 @@ def cropNumber(image):
         cropArray.append(cropImg_bottom)
         cropArray.append(cropImg_bottom_bottom)
 
+        #cv2.imshow('top_top', cropImg_top_top)
+        #cv2.imshow('top', cropImg_top)
+        #cv2.imshow('bottom', cropImg_bottom)
+        #cv2.imshow('bottom_bottom', cropImg_bottom_bottom)
+
         return cropArray
 
     except:
