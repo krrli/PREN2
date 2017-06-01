@@ -91,9 +91,6 @@ class MainBitch:
 
         self.set_camera_for_framebuffer()
 
-        print("MAIN: starting queue worker")
-        self._queueWorker.start_working()
-
     """
     Handles the communication with the Freedom Board
     """
@@ -135,6 +132,8 @@ class MainBitch:
         for frameBuffer in self._frameBuffers:
             frameBuffer.stop_capturing()
 
+        print("MAIN: starting queue worker")
+        self._queueWorker.start_working()
 
         print("MAIN: waiting for queue worker to finish")
         while not self._queueWorker.idle:
