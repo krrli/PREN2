@@ -37,7 +37,7 @@ class RomanDetector5():
 
         if not self.hasCharacterBeenEvaluated:
             hsv = cv2.cvtColor(frame, cv2.COLOR_BGR2HSV)
-            # define range of blue color in HSV
+            # define range of red color in HSV
 
             # lower mask (0-10)
             lower_red = np.array([0, 100, 10])
@@ -54,10 +54,10 @@ class RomanDetector5():
             red_hue_image = cv2.addWeighted(mask0, 1.0, mask1, 1.0, 0.0)
 
             kernel = np.ones((5, 5), np.uint8)
-            opening = cv2.morphologyEx(red_hue_image, cv2.MORPH_OPEN, kernel, iterations = 1)
-            closing = cv2.morphologyEx(opening, cv2.MORPH_CLOSE, kernel, iterations = 5)
+            opening = cv2.morphologyEx(red_hue_image, cv2.MORPH_OPEN, kernel, iterations = 2)
+            #closing = cv2.morphologyEx(opening, cv2.MORPH_CLOSE, kernel, iterations = 5)
 
-            blur = cv2.GaussianBlur(closing, (5, 5), 0)
+            blur = cv2.GaussianBlur(opening, (5, 5), 0)
             ret, thresh = cv2.threshold(blur, 0, 255, cv2.THRESH_BINARY + cv2.THRESH_OTSU)
 
             edges = cv2.Canny(blur, ret / 2, ret)
@@ -68,7 +68,7 @@ class RomanDetector5():
             _, contours, hierarchy = cv2.findContours(edges, cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE)
             barCount = 0
 
-            #cv2.imshow('test', edges)
+            cv2.imshow('test', edges)
 
             # cv2.drawContours(frame, contours, -1, (0, 255, 0), 3)
             rectangleList = []
@@ -89,6 +89,7 @@ class RomanDetector5():
                     # Only look for rectangles
                     if (area > 1000):
                         rect = cv2.boundingRect(approxCurve)
+                        #print(area)
                         # Only save Rectangles with height of 200+ or radius of 100+
                         if radius >= 100 or rect[3] >= 200:
                         #if rect[3] >= 200:
