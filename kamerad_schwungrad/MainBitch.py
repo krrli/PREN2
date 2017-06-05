@@ -24,7 +24,7 @@ class MainBitch:
         self._was_red = False
         self._trafficLightDetector = TrafficLightDetector()
         # Kamera indexes für OpenCV [rechts, links]
-        self._detectionCameras = ["/dev/v4l/by-path/platform-3f980000.usb-usb-0:1.2:1.0-video-index0", "/dev/v4l/by-path/platform-3f980000.usb-usb-0:1.3:1.0-video-index0"]
+        self._detectionCameras = ["/dev/v4l/by-path/platform-3f980000.usb-usb-0:1.5:1.0-video-index0", "/dev/v4l/by-path/platform-3f980000.usb-usb-0:1.3:1.0-video-index0"]
         for idx, camera in enumerate(self._detectionCameras):
             self._detectionCameras[idx] = os.path.join(os.path.dirname(camera), os.readlink(camera))
             print("MAIN: using camera " + self._detectionCameras[idx])

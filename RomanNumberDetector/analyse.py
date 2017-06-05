@@ -39,12 +39,12 @@ def analyseNumber(image):
         elif (countedComponents[1] == 3 and countedComponents[2] == 3):
             #print(3)
             return 3
+        elif (countedComponents[0] == 2 and countedComponents[1] == 2 and countedComponents[2] == 2 and countedComponents[3] == 2) or (countedComponents[0] == 1 and countedComponents[1] == 2 and countedComponents[2] == 2 and countedComponents[3] == 1):
+            #print(2)
+            return 2
         elif (countedComponents[0] == 2 and countedComponents[1] == 2 and countedComponents[3] == 1):
             #print(5)
             return 5
-        elif (countedComponents[1] == 2 and countedComponents[2] == 2):
-            #print(2)
-            return 2
         elif (countedComponents[1] == 1 and countedComponents[2] == 1):
             #print(1)
             return 1

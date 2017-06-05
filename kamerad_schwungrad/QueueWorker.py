@@ -43,11 +43,19 @@ class QueueWorker:
                         number_result = self._romanNumeralDetector.capture(frame)
                         if number_result != 0 and (not number_result is None):
                             print("QUEE: Numer detected " + str(number_result))
-                            if str(number_result) in self._numbers_dictionary:
+                            if number_result in self._numbers_dictionary:
                                 self._numbers_dictionary[number_result] += 1
                             else:
                                 self._numbers_dictionary[number_result] = 1
-                            self.number_detected = int(max(self._numbers_dictionary.iteritems(), key=operator.itemgetter(1))[0])
+
+                            max = 0
+                            key = 1
+                            for idx, value in self._numbers_dictionary.items():
+                                if value > max:
+                                    max = value
+                                    key = idx
+
+                            self.number_detected = int(key)
                             print("QUEE: current number detected " + str(self.number_detected))
                         did_work = True
                     except Empty:
