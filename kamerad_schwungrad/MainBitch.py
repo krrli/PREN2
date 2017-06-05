@@ -9,6 +9,7 @@ from kamerad_schwungrad.QueueWorker import QueueWorker
 import random
 import time
 import cv2
+import os
 
 """
 This is the Main class that gets started
@@ -22,9 +23,13 @@ class MainBitch:
     def __init__(self):
         self._was_red = False
         self._trafficLightDetector = TrafficLightDetector()
-        self._trafficLightCameraToUse = 1
         # Kamera indexes für OpenCV [rechts, links]
-        self._detectionCameras = [1, 0]
+        self._detectionCameras = ["/dev/v4l/by-path/platform-3f980000.usb-usb-0:1.2:1.0-video-index0", "/dev/v4l/by-path/platform-3f980000.usb-usb-0:1.3:1.0-video-index0"]
+        for idx, camera in enumerate(self._detectionCameras):
+            self._detectionCameras[idx] = os.path.join(os.path.dirname(camera), os.readlink(camera))
+            print("MAIN: using camera " + self._detectionCameras[idx])
+
+        self._trafficLightCameraToUse = self._detectionCameras[0]
         self._detectionCameraToUseIndex = 0
         self._freedomInterface = FreedomInterface('/dev/ttyAMA0')
         self._romanDetector = RomanDetector5()
@@ -73,6 +78,7 @@ class MainBitch:
                         # self.handle_roman_numeral_detection()
                         # TODO: Queue Worker abfroge, öber scho e nommere hed
                         parcours_finished = self.handle_freedom_interface()
+                        time.sleep(0.01)
                     break
             except SerialException:
                 print("MAIN: Could not use Serial Port?")
@@ -138,7 +144,7 @@ class MainBitch:
         print("MAIN: waiting for queue worker to finish")
         while not self._queueWorker.idle:
             print("MAIN: still waiting ... ")
-            time.sleep(0.1)
+            time.sleep(1)
 
         digit = self._queueWorker.number_detected
         print("MAIN: displaying digit " + str(digit))

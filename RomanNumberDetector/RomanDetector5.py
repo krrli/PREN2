@@ -68,7 +68,7 @@ class RomanDetector5():
             _, contours, hierarchy = cv2.findContours(edges, cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE)
             barCount = 0
 
-            cv2.imshow('test', edges)
+            # cv2.imshow('test', edges)
 
             # cv2.drawContours(frame, contours, -1, (0, 255, 0), 3)
             rectangleList = []
@@ -91,7 +91,7 @@ class RomanDetector5():
                         rect = cv2.boundingRect(approxCurve)
                         #print(area)
                         # Only save Rectangles with height of 200+ or radius of 100+
-                        if radius >= 100 or rect[3] >= 200:
+                        if radius >= 50 or rect[3] >= 100:
                         #if rect[3] >= 200:
                             rectangleList.append(rect)
                             barCount += 1
