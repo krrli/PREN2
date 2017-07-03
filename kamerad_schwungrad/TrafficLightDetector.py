@@ -15,7 +15,7 @@ class TrafficLightDetector:
         return self.count_color("red", frame, [150, 100, 200], [200, 255, 255]) > 100
 
     def detect_green_traffic_light(self, frame):
-        return self.count_color("green", frame, [35, 150, 145], [78, 255, 255]) > 100
+        return self.count_color("green", frame, [35, 150, 145], [78, 255, 255]) > 70
 
     def count_color(self, color, frame, lower, upper):
         # cv2.imwrite(img=frame, filename=(color + "-orig.png"))
