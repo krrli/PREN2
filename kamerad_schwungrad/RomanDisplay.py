@@ -72,6 +72,15 @@ class RomanDisplay:
         GPIO.setmode(GPIO.BOARD)
         self.seuptAllSegments()
 
+        self.blinki_segments = (7, 11, 13, 15, 29, 31, 33)
+        self.blinki_index = 0
+
+    def blinki(self):
+        GPIO.output(self.blinki_segments[self.blinki_index], GPIO.LOW)
+        self.blinki_index += 1
+        self.blinki_index %= len(self.blinki_segments)
+        GPIO.output(self.blinki_segments[self.blinki_index], GPIO.HIGH)
+
     """
     Function which can be called to display digits on 7Segment.
     """

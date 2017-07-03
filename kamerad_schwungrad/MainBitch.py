@@ -144,7 +144,10 @@ class MainBitch:
         print("MAIN: waiting for queue worker to finish")
         while not self._queueWorker.idle:
             print("MAIN: still waiting ... ")
-            time.sleep(1)
+            self._romanDisplay.blinki()
+            time.sleep(0.5)
+
+        self._romanDisplay.resetAllSegments()
 
         digit = self._queueWorker.number_detected
         print("MAIN: displaying digit " + str(digit))
